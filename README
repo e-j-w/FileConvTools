@@ -1,0 +1,6 @@
+File Conversion Tools
+Jonathan Williams
+
+Codes for converting between different file types commonly used in the lab.
+
+Use 'make' to compile.  Requires g++ compiler and ROOT to be installed.  gf3 (radware) is recommended for viewing some file formats (.mca, etc.).
