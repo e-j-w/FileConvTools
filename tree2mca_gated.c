@@ -1,5 +1,7 @@
 #include "tree2mca.h"
 
+Double_t gate_data[NSPECT];
+
 int main(int argc, char *argv[])
 {
 
@@ -13,22 +15,26 @@ int main(int argc, char *argv[])
   theApp=new TApplication("App", &ac, av);
 
   FILE *output;
-  const char *branch;
-  int numLeaf;
+  const char *sort_branch, *gate_branch;
+  int sort_leaf, gate_leaf;
+  bool same_branches = false;
 
   TFile *inp;
   TTree *stree;
 
-  if(argc!=6)
+  if(argc!=8)
     {
-      printf("tree2mca root_filename tree_name branch number_of_leaves output_file\n");
-      printf("\nTakes the specified branch of the specified ROOT tree file and converts it to an .mca file, where each spectrum in the .mca file is a leaf in the ROOT tree branch.\n");
+      printf("tree2mca_gated root_filename tree_name sort_branch_name sort_leaf_number gate_branch_name gate_leaf_number output_file\n");
+      printf("\nTakes the data in the specified branch and leaf of the specified ROOT tree and sorts it to an .mca file with spectra gated on the data in the specified gate branch and leaf.\n");
+      printf("Eg. the sort data could refer to gamma ray energy, while the gate data could refer to detector number.  Output is then an .mca file containing gamma-ray spectra, where the spectrum number corresponds to the detector number.\n");
       exit(-1);
     }
 
   //read in command line arguments
-  branch=argv[3];
-  numLeaf=atoi(argv[4]);
+  sort_branch=argv[3];
+  sort_leaf=atoi(argv[4]);
+  gate_branch=argv[5];
+  gate_leaf=atoi(argv[6]);
 
   //read in tree file
   inp = new TFile(argv[1],"read");
@@ -43,8 +49,13 @@ int main(int argc, char *argv[])
     }
   printf("Tree read out.\n");
 
+  if(strcmp(sort_branch,gate_branch)==0)
+    same_branches=true;
+
   stree->ResetBranchAddresses();
-  stree->SetBranchAddress(branch,data);
+  if (!same_branches)
+    stree->SetBranchAddress(sort_branch,data);
+  stree->SetBranchAddress(gate_branch,gate_data);
   printf("Branch address set.\n");
   printf("Number of tree entries: %Ld\n",stree->GetEntries());
 
@@ -56,20 +67,26 @@ int main(int argc, char *argv[])
   for (int i=0;i<stree->GetEntries();i++)
     {
       stree->GetEntry(i);
-      for (int j=0;j<numLeaf;j++)
-        if((data[j]<S32K)&&(j<NSPECT))
-          outHist[j][(int)data[j]]++; //fill the output histogram
+
+      //if the branches are the same, copy data from one to the other
+      if(same_branches)
+        for (int j=0;j<NSPECT;j++)
+          data[j]=gate_data[j];
+
+      for (int j=0;j<NSPECT;j++)
+        if((int)gate_data[gate_leaf]==j)
+          if(data[sort_leaf]<S32K)
+            outHist[j][(int)data[sort_leaf]]++; //fill the output histogram
     }
 
   //write the output histogram to disk
-  if((output=fopen(argv[5],"w"))==NULL)
+  if((output=fopen(argv[7],"w"))==NULL)
     {
       printf("ERROR: Cannot open the output .mca file!\n");
       exit(-1);
     }
-  for (int i=0;i<numLeaf;i++)
-    if(i<NSPECT)
-      fwrite(outHist[i],S32K*sizeof(int),1,output);
+  for (int i=0;i<NSPECT;i++)
+    fwrite(outHist[i],S32K*sizeof(int),1,output);
   fclose(output);
 
   return(0); //great success

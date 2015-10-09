@@ -77,10 +77,10 @@ int main(int argc, char *argv[])
   //write the output histogram to disk
   if((output=fopen(argv[5],"w"))==NULL)
     {
-      printf("ERROR: Cannot open the output mca file!\n");
+      printf("ERROR: Cannot open the output .mca file!\n");
       exit(-1);
     }
-  for (int i=0;i<numLeaf;i++)
+  for (int i=0;i<NSPECT;i++)
     if(i<NSPECT)
       fwrite(outHist[i],S32K*sizeof(int),1,output);
   fclose(output);
