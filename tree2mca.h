@@ -8,7 +8,10 @@
 #include "TApplication.h"
 
 #define S32K   32768
+#define NSPECT 100
 
+int outHist[NSPECT][S32K];
+Double_t data[NSPECT];
 TApplication *theApp;
 
 

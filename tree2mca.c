@@ -1,5 +1,4 @@
 #include "tree2mca.h"
-#define EntrySize   50000
 
 int main(int argc, char *argv[])
 {
@@ -15,22 +14,21 @@ int main(int argc, char *argv[])
 
   FILE *output;
   const char *branch;
-  Double_t data[EntrySize];
-
-  int outHist[S32K];
+  int numLeaf;
 
   TFile *inp;
   TTree *stree;
 
-  if(argc!=5)
+  if(argc!=6)
     {
-      printf("tree2mca root_filename tree_name branch output_file\n");
-      printf("\nTakes the specified branch of the specified ROOT tree file and converts it to a single spectrum .mca file.\n");
+      printf("tree2mca root_filename tree_name branch number_of_leaves output_file\n");
+      printf("\nTakes the specified branch of the specified ROOT tree file and converts it to an .mca file, where each spectrum in the .mca file is a leaf in the ROOT tree branch.\n");
       exit(-1);
     }
 
   //read in command line arguments
   branch=argv[3];
+  numLeaf=atoi(argv[4]);
 
   //read in tree file
   inp = new TFile(argv[1],"read");
@@ -50,23 +48,28 @@ int main(int argc, char *argv[])
   printf("Branch address set.\n");
   printf("Number of tree entries: %Ld\n",stree->GetEntries());
 
+
   for (int i=0;i<S32K;i++)
-      outHist[i]=0; //initialize all elements to 0
+    for (int j=0;j<NSPECT;j++)
+        outHist[j][i]=0; //initialize all elements to 0
 
   for (int i=0;i<stree->GetEntries();i++)
     {
       stree->GetEntry(i);
-      if(data[0]<S32K)
-        outHist[(int)data[0]]++; //fill the output histogram
+      for (int j=0;j<numLeaf;j++)
+        if((data[j]<S32K)&&(j<NSPECT))
+          outHist[j][(int)data[j]]++; //fill the output histogram
     }
 
   //write the output histogram to disk
-  if((output=fopen(argv[4],"w"))==NULL)
+  if((output=fopen(argv[5],"w"))==NULL)
     {
       printf("ERROR: Cannot open the output mca file!\n");
       exit(-1);
     }
-  fwrite(outHist,S32K*sizeof(int),1,output);
+  for (int i=0;i<numLeaf;i++)
+    if(i<NSPECT)
+      fwrite(outHist[i],S32K*sizeof(int),1,output);
   fclose(output);
 
   return(0); //great success

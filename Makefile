@@ -9,4 +9,4 @@ tree2mca: tree2mca.c
 treelist2mca: treelist2mca.c
 	g++ treelist2mca.c $(CFLAGS) $(ROOT) -o treelist2mca
 clean:
-	rm -rf *~ tree2mca
+	rm -rf *~ tree2mca treelist2mca
