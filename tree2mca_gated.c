@@ -1,6 +1,6 @@
 #include "tree2mca.h"
 
-Double_t gate_data[NSPECT];
+Int_t gate_data[NSPECT];
 
 int main(int argc, char *argv[])
 {
@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
     {
       printf("tree2mca_gated root_filename tree_name sort_branch_name sort_leaf_number gate_branch_name gate_leaf_number output_file\n");
       printf("\nTakes the data in the specified branch and leaf of the specified ROOT tree and sorts it to an .mca file with spectra gated on the data in the specified gate branch and leaf.\n");
-      printf("Eg. the sort data could refer to gamma ray energy, while the gate data could refer to detector number.  Output is then an .mca file containing gamma-ray spectra, where the spectrum number corresponds to the detector number.\n");
+      printf("Eg. the sort data could refer to gamma ray energy, while the gate data could refer to detector number.  Output is then an .mca file containing gamma-ray spectra, where the spectrum number corresponds to the detector number.  The gate data should contain integer values.\n");
       exit(-1);
     }
 
@@ -71,10 +71,10 @@ int main(int argc, char *argv[])
       //if the branches are the same, copy data from one to the other
       if(same_branches)
         for (int j=0;j<NSPECT;j++)
-          data[j]=gate_data[j];
+          data[j]=(double)gate_data[j];
 
       for (int j=0;j<NSPECT;j++)
-        if((int)gate_data[gate_leaf]==j)
+        if(gate_data[gate_leaf]==j)
           if(data[sort_leaf]<S32K)
             outHist[j][(int)data[sort_leaf]]++; //fill the output histogram
     }
