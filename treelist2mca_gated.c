@@ -19,6 +19,7 @@ int main(int argc, char *argv[])
   const char *sort_branch, *gate_branch;
   int sort_leaf, gate_leaf;
   bool same_branches = false;
+  double scaling=1.0; //factor to scale data by
 
   bool output_specified = false;
 
@@ -26,18 +27,19 @@ int main(int argc, char *argv[])
   TFile *inp;
   TTree *stree;
 
-  if((argc!=8)&&(argc!=7))
+  if((argc!=9)&&(argc!=8))
     {
-      printf("\ntreelist2mca_gated root_file_list tree_name sort_branch_name sort_leaf_number gate_branch_name gate_leaf_number output_file\n");
+      printf("\ntreelist2mca_gated root_file_list tree_name sort_branch_name sort_leaf_number scaling gate_branch_name gate_leaf_number output_file\n");
       printf("\nTakes the data in the specified branch and leaf of the specified ROOT trees and sorts it to .mca files with spectra gated on the data in the specified gate branch and leaf.\n");
       printf("Eg. the sort data could refer to gamma ray energy, while the gate data could refer to detector number.  Output is then an .mca file containing gamma-ray spectra, where the spectrum number corresponds to the detector number.  The gate data should contain integer values.\n");
+      printf("\nscaling specifies a scaling factor for the sort data, which can be used to get different binning in the output spectra.\n");
       printf("\nThe output_file parameter is optional - if used, all data will be sorted into a single .mca file with the filename specified by output_file.  Otherwise, individual .mca files for each root tree will be generated with matching filenames.\n\n");
       exit(-1);
     }
     
   printf("Here!\n");
     
-  if(argc==8)
+  if(argc==9)
     {
       output_specified = true;
       printf("Sorting data to single output file %s.\n", argv[7]);
@@ -52,8 +54,9 @@ int main(int argc, char *argv[])
   //read in command line arguments
   sort_branch=argv[3];
   sort_leaf=atoi(argv[4]);
-  gate_branch=argv[5];
-  gate_leaf=atoi(argv[6]);
+  scaling=atof(argv[5]);
+  gate_branch=argv[6];
+  gate_leaf=atoi(argv[7]);
   if(strcmp(sort_branch,gate_branch)==0)
     same_branches=true;
   
@@ -104,7 +107,7 @@ int main(int argc, char *argv[])
           for (int j=0;j<NSPECT;j++)
             if(gate_data[gate_leaf]==j)
               if(data[sort_leaf]<S32K)
-                outHist[j][(int)data[sort_leaf]]++; //fill the output histogram
+                outHist[j][(int)(data[sort_leaf]*scaling)]++; //fill the output histogram
         }
         
       //save results to individual .mca files if applicable
@@ -133,7 +136,7 @@ int main(int argc, char *argv[])
   if(output_specified==true)
     {
       //write the output histogram to disk
-      if((output=fopen(argv[7],"w"))==NULL)
+      if((output=fopen(argv[8],"w"))==NULL)
         {
           printf("ERROR: Cannot open the output .mca file!\n");
           exit(-1);
