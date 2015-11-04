@@ -1,0 +1,22 @@
+INPUT_TREE_LIST             list
+TREE_NAME                   tree
+SORT_BRANCH                 GEAddBack
+SORT_LEAF                   0
+GATE_BRANCH                 GRingAddBack
+GATE_LEAF                   0
+SORT_DATA_SCALING_FACTOR    2
+SORT_DATA_FWHM_RESPONSE     yes
+FWHM_A                      0
+FWHM_B                      1.0
+FWHM_C                      0
+FWHM_F                      0
+FWHM_G                      0
+FWHM_H                      0
+OUTPUT_FILE                 0p2a_2083testCdens2.15.mca
+
+This is a configuration file for the tree2mca code.
+Possible parameters can be inferred from the code in 
+read_config.c.  At some point I may write better 
+documentation for this.
+If you change the format of the file, prepare for unforseen
+consequences.
