@@ -5,13 +5,10 @@ SORT_LEAF                   0
 GATE_BRANCH                 GRingAddBack
 GATE_LEAF                   0
 SORT_DATA_SCALING_FACTOR    2
-SORT_DATA_FWHM_RESPONSE     yes
-FWHM_A                      0
-FWHM_B                      1.0
-FWHM_C                      0
-FWHM_F                      0
-FWHM_G                      0
-FWHM_H                      0
+SORT_DATA_FWHM_RESPONSE     no
+FWHM_F                      2.7661
+FWHM_G                      2.5986
+FWHM_H                      0.7703
 OUTPUT_FILE                 0p2a_2083testCdens2.15.mca
 
 This is a configuration file for the tree2mca code.
