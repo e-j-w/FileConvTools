@@ -1,4 +1,5 @@
 add_mca
+mca2txt
 tree2mca
 treelist2mca
 tree2mca_gated
@@ -6,4 +7,5 @@ list
 *.mca
 *.spe
 *.root
+*.txt
 *~

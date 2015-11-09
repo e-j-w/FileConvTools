@@ -6,12 +6,12 @@ GATE_BRANCH                 GRingAddBack
 GATE_LEAF                   0
 SORT_DATA_SCALING_FACTOR    2
 SORT_DATA_FWHM_RESPONSE     no
-FWHM_F                      2.7661
-FWHM_G                      2.5986
-FWHM_H                      0.7703
+FWHM_F                      3.1841
+FWHM_G                      3.3834
+FWHM_H                      1.7316
 OUTPUT_FILE                 0p2a_2083testCdens2.15.mca
 
-This is a configuration file for the tree2mca code.
+This is a configuration file for the tree2mca_gated code.
 Possible parameters can be inferred from the code in 
 read_config.c.  At some point I may write better 
 documentation for this.

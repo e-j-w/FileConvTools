@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
   if(num_spect>NSPECT)
     {
       printf("ERROR: Number of spectra requested is larger than the maximum of %i!\n",NSPECT);
-      printf("Either specify a lower number or change the value of NSPECT in tree2mca.h and recompile.\n");
+      printf("Either specify a lower number or change the value of NSPECT in mca.h and recompile.\n");
       exit(-1);
     }
 

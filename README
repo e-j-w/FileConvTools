@@ -3,5 +3,5 @@ Jonathan Williams
 
 Codes for converting between and processing different file types commonly used in the lab.
 
-Use 'make' to compile.  Requires g++ compiler and ROOT to be installed (some codes that do not depend on ROOT may be compiled using 'make no_root').  gf3 (radware) is recommended for viewing some file formats (.mca, etc.).
+Use 'make' to compile.  Requires g++ compiler and ROOT to be installed (some codes that do not depend on ROOT may be compiled using 'make no_root').  gf3 (radwareS32K) is recommended for viewing .mca files, or the code mca2txt can be used to convert them to plaintext (for viewing in Excel, etc.).
 
