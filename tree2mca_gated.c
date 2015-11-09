@@ -181,22 +181,22 @@ void addTreeDataToOutHist()
 
 }
 
-double FWHM_response(double e_in)
+double FWHM_response(double ch_in)
 {
-  double e_out,fwhm,sigma,e;
+  double ch_out,fwhm,sigma,ch;
   
-  if(e_in==0.)
-    return e_in;
+  if(ch_in==0.)
+    return ch_in;
   
-  e=e_in/1000.;
-  // printf("e: %f, e_in: %f\n",e,e_in);
-  fwhm=sqrt(fwhmF+fwhmG*e+fwhmH*e*e);
+  ch=ch_in/1000.;
+  // printf("ch: %f, ch_in: %f\n",ch,ch_in);
+  fwhm=sqrt(fwhmF*fwhmF + fwhmG*fwhmG*ch + fwhmH*fwhmH*ch*ch);
   sigma=fwhm/2.35482;
   //  printf("sigma: %f\n",sigma);
   if(sigma>0)
-    e_out=randGen->Gaus(e_in,sigma);
+    ch_out=randGen->Gaus(ch_in,sigma);
   else
-    e_out=e_in;
+    ch_out=ch_in;
 
-  return e_out;
+  return ch_out;
 }

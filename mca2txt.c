@@ -25,6 +25,16 @@ int main(int argc, char *argv[])
     mult_out=true;
   //read in command line arguments
   spect=atoi(argv[2]);
+  
+  if(spect>NSPECT)
+    {
+      if(mult_out==true)
+        printf("ERROR: Number of spectra requested is larger than the maximum of %i!\n",NSPECT);
+      if(mult_out==false)
+        printf("ERROR: Spectrum number requested is larger than the maximum of %i!\n",NSPECT-1);
+      printf("Either specify a lower number or increase the value of NSPECT in mca.h and recompile.\n");
+      exit(-1);
+    }
     
   //read in data from the .mca file
   if((input=fopen(argv[1],"r"))==NULL)
@@ -59,7 +69,7 @@ int main(int argc, char *argv[])
   //multiple output mode
   if(mult_out==true)
     {
-      for(int i=0;i<=spect;i++)
+      for(int i=0;i<spect;i++)
         {
           sprintf(str,"%s%i.txt",argv[1],i);
           //open the output file   
