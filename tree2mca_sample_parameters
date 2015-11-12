@@ -1,0 +1,17 @@
+INPUT_TREE                  0p2a_30MeVSRIMcomp_run1.root
+TREE_NAME                   tree
+SORT_BRANCH                 resDec
+NUMBER_OF_LEAVES            3
+SORT_DATA_SCALING_FACTOR    100000
+SORT_DATA_FWHM_RESPONSE     no
+FWHM_F                      3.1841
+FWHM_G                      3.3834
+FWHM_H                      1.7316
+OUTPUT_FILE                 0p2a_30MeVSRIMcomp_run1.mca
+
+This is a parameter file for the tree2mca code.
+Possible parameters can be inferred from the code in 
+read_config.c.  At some point I may write better 
+documentation for this.
+If you change the format of the file, prepare for unforseen
+consequences.

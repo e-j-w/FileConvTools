@@ -24,15 +24,15 @@ int main(int argc, char *argv[])
 
   if(argc!=2)
     {
-      printf("\ntree2mca_gated config_file\n");
-      printf("\nTakes the data in the specified branch and leaf of the specified ROOT tree(s) and sorts it to .mca file(s) with spectra gated on the data in the specified gate branch and leaf.\n");
+      printf("\ntree2mca_gated parameter_file\n");
+      printf("\nTakes the data in the specified branch and leaf of the specified ROOT tree(s) and sorts it to .mca file(s) with spectra gated on the data in the specified gate branch and leaf.  The parameter INPUT_TREE is used to specify a single ROOT file, whereas the parameter INPUT_TREE_LIST is used to specify a list of ROOT files to sort.\n");
       printf("Eg. the sort data could refer to gamma ray energy, while the gate data could refer to detector number.  Output is then an .mca file containing gamma-ray spectra, where the spectrum number corresponds to the detector number.  The gate data should contain integer values.\n");
       printf("\nSORT_DATA_SCALING_FACTOR specifies a scaling factor for the sort data, which can be used to get different binning in the output spectra.\n");
       printf("\nThe OUTPUT_FILE parameter is optional - if used, all data will be sorted into a single .mca file with the filename specified by output_file.  Otherwise, individual .mca files for each root tree will be generated with matching filenames.\n\n");
       exit(-1);
     }
 
-  readConfigFile(argv[1],"tree2mca"); //grab data from the config file
+  readConfigFile(argv[1],"tree2mca_gated"); //grab data from the parameter file
   
   if(strcmp(sort_branch,gate_branch)==0)
     same_branches=true;
@@ -170,13 +170,15 @@ void addTreeDataToOutHist()
       if(fwhmResponse==false)
         for (int j=0;j<NSPECT;j++)
           if(gate_data[gate_leaf]==j)
-            if(data[sort_leaf]<S32K)
-              outHist[j][(int)(data[sort_leaf]*scaling)]++; //fill the output histogram
+            if((data[sort_leaf]*scaling)>=0.0)
+              if((data[sort_leaf]*scaling)<S32K)
+                outHist[j][(int)(data[sort_leaf]*scaling)]++; //fill the output histogram
       if(fwhmResponse==true)
         for (int j=0;j<NSPECT;j++)
           if(gate_data[gate_leaf]==j)
-            if(data[sort_leaf]<S32K)
-              outHist[j][(int)(FWHM_response(data[sort_leaf]*scaling))]++; //fill the output histogram
+            if((data[sort_leaf]*scaling)>=0.0)
+              if((data[sort_leaf]*scaling)<S32K)
+                outHist[j][(int)(FWHM_response(data[sort_leaf]*scaling))]++; //fill the output histogram
     }
 
 }

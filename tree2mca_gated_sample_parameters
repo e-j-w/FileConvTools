@@ -11,7 +11,7 @@ FWHM_G                      3.3834
 FWHM_H                      1.7316
 OUTPUT_FILE                 0p2a_2083testCdens2.15.mca
 
-This is a configuration file for the tree2mca_gated code.
+This is a parameter file for the tree2mca_gated code.
 Possible parameters can be inferred from the code in 
 read_config.c.  At some point I may write better 
 documentation for this.

@@ -1,4 +1,5 @@
 #include "tree2mca.h"
+#include "read_config.c"
 
 int main(int argc, char *argv[])
 {
@@ -13,38 +14,33 @@ int main(int argc, char *argv[])
   theApp=new TApplication("App", &ac, av);
 
   FILE *output;
-  const char *branch;
-  int numLeaf;
-
   TFile *inp;
-  TTree *stree;
+  //randGen = new TRandom();
 
-  if(argc!=6)
+  if(argc!=2)
     {
-      printf("tree2mca root_filename tree_name branch number_of_leaves output_file\n");
+      printf("tree2mca parameter_file\n");
       printf("\nTakes the specified branch of the specified ROOT tree file and converts it to an .mca file, where each spectrum in the .mca file is a leaf in the ROOT tree branch.\n");
       exit(-1);
     }
-
-  //read in command line arguments
-  branch=argv[3];
-  numLeaf=atoi(argv[4]);
+    
+  readConfigFile(argv[1],"tree2mca"); //grab data from the parameter file
 
   //read in tree file
-  inp = new TFile(argv[1],"read");
-  if((stree = (TTree*)inp->Get(argv[2]))==NULL)
+  inp = new TFile(inp_filename,"read");
+  if((stree = (TTree*)inp->Get(tree_name))==NULL)
     {
-      printf("The specified tree named %s doesn't exist, trying default name 'tree'.\n",argv[2]);
+      printf("The specified tree named %s doesn't exist, trying default name 'tree'.\n",tree_name);
       if((stree = (TTree*)inp->Get("tree"))==NULL)//try the default tree name
         {
-           printf("ERROR: The specified tree named %s (within the ROOT file) cannot be opened!\n",argv[2]);
+           printf("ERROR: The specified tree named %s (within the ROOT file) cannot be opened!\n",tree_name);
            exit(-1);
         }
     }
   printf("Tree read out.\n");
 
   stree->ResetBranchAddresses();
-  stree->SetBranchAddress(branch,data);
+  stree->SetBranchAddress(sort_branch,data);
   printf("Branch address set.\n");
   printf("Number of tree entries: %Ld\n",stree->GetEntries());
 
@@ -57,12 +53,12 @@ int main(int argc, char *argv[])
     {
       stree->GetEntry(i);
       for (int j=0;j<numLeaf;j++)
-        if((data[j]<S32K)&&(j<NSPECT))
-          outHist[j][(int)data[j]]++; //fill the output histogram
+        if(((data[j]*scaling)<S32K)&&((data[j]*scaling)>=0.0)&&(j<NSPECT))
+          outHist[j][(int)(data[j]*scaling)]++; //fill the output histogram
     }
 
   //write the output histogram to disk
-  if((output=fopen(argv[5],"w"))==NULL)
+  if((output=fopen(out_filename,"w"))==NULL)
     {
       printf("ERROR: Cannot open the output .mca file!\n");
       exit(-1);

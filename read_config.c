@@ -6,7 +6,7 @@ char str1[256],str2[256];
 
 //tree2mca parameters
 char sort_branch[256], gate_branch[256], inp_filename[256],tree_name[256],out_filename[256];
-int sort_leaf, gate_leaf;
+int sort_leaf, gate_leaf, numLeaf;
 double scaling=1.0;
 bool listMode=false; //whether to sort tree files from a list 
 bool fwhmResponse=false; //whether to do energy convolution
@@ -32,6 +32,8 @@ void readConfigFile(const char * fileName,const char *configType)
         sort_leaf=atoi(str2);
       if(strcmp(str1,"GATE_LEAF")==0)
         sort_leaf=atoi(str2);
+      if(strcmp(str1,"NUMBER_OF_LEAVES")==0)
+        numLeaf=atoi(str2);
       if(strcmp(str1,"INPUT_TREE")==0)
         {
           listMode=false;
@@ -69,6 +71,27 @@ void readConfigFile(const char * fileName,const char *configType)
   
   //Report parameters based on the config file type used
   if(strcmp(configType,"tree2mca")==0)
+    {
+      if(listMode==false)
+        printf("Input tree file: %s\n",inp_filename);
+      //if(listMode==true)
+      //  printf("Input list file: %s\n",inp_filename);
+      printf("Name of tree in the file(s) to be used: %s\n",tree_name);
+      printf("Sorting branch with name: %s\n",sort_branch);
+      printf("Number of leaves to sort into seperate spectra in the output file: %i\n",numLeaf);
+      if(fwhmResponse==true)
+        {
+          printf("Will apply FWHM response function to sorted data.\n");
+          printf("FWHM response function paremeters: F=%f, G=%f, H=%f.\n",fwhmF,fwhmG,fwhmH);
+        }
+      if(scaling!=1.0)
+        printf("Will scale sorted data by a factor of %f\n",scaling);
+      if(output_specified==true)
+        printf("Will save output data to file: %s\n",out_filename);
+      //if(output_specified==false)
+      //  printf("Will save output data to individual files (input filenames + '.mca').\n");
+    }
+  if(strcmp(configType,"tree2mca_gated")==0)
     {
       if(listMode==false)
         printf("Input tree file: %s\n",inp_filename);
