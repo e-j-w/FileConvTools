@@ -74,8 +74,8 @@ void readConfigFile(const char * fileName,const char *configType)
     {
       if(listMode==false)
         printf("Input tree file: %s\n",inp_filename);
-      //if(listMode==true)
-      //  printf("Input list file: %s\n",inp_filename);
+      if(listMode==true)
+        printf("Input list file: %s\n",inp_filename);
       printf("Name of tree in the file(s) to be used: %s\n",tree_name);
       printf("Sorting branch with name: %s\n",sort_branch);
       printf("Number of leaves to sort into seperate spectra in the output file: %i\n",numLeaf);
@@ -88,8 +88,8 @@ void readConfigFile(const char * fileName,const char *configType)
         printf("Will scale sorted data by a factor of %f\n",scaling);
       if(output_specified==true)
         printf("Will save output data to file: %s\n",out_filename);
-      //if(output_specified==false)
-      //  printf("Will save output data to individual files (input filenames + '.mca').\n");
+      if(output_specified==false)
+        printf("Will save output data to individual files (input filenames + '.mca').\n");
     }
   if(strcmp(configType,"tree2mca_gated")==0)
     {
