@@ -9,17 +9,18 @@
 #include "TFile.h"
 #include "TApplication.h"
 
-#define S32K   32768
-#define NSPECT 100
+//maximum number of lines and columns that can be input/output to/from text files
+#define MAXFILELENGTH   1000000
+#define MAXNUMCOLUMNS   12
+
+//maximum number of leaves in a given branch of a ROOT tree
 #define MAXLEAVES 10
 
-//forward declarations
-void addTreeDataToOutHist();
-double FWHM_response(double);
+int maxBin;
+int numLines;
 
 bool same_branches;
-int outHist[NSPECT][S32K];
-Double_t data[MAXLEAVES];
+Double_t xVal[MAXLEAVES],yVal[MAXLEAVES];
 TTree *stree;
 TApplication *theApp;
 TRandom *randGen;

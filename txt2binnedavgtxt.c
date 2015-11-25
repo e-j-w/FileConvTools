@@ -52,15 +52,16 @@ int main(int argc, char *argv[])
   
   //build the average and standard deviation arrays
   for(int i=0;i<numLines;i++)
-    {
-      avg[bin[i]]+=val[i];
-      numEntriesPerBin[bin[i]]++;
-      //printf("avg in bin 0: %f, %i entries\n",avg[0],numEntriesPerBin[0]);
-    }
+    if(bin[i]>=0)
+      {
+        avg[bin[i]]+=val[i];
+        numEntriesPerBin[bin[i]]++;
+      }
   for(int i=0;i<=maxBin;i++)
     avg[i]=avg[i]/numEntriesPerBin[i];
   for(int i=0;i<numLines;i++)
-    stdev[bin[i]]+=(val[i] - avg[bin[i]])*(val[i] - avg[bin[i]]);
+    if(bin[i]>=0)
+      stdev[bin[i]]+=(val[i] - avg[bin[i]])*(val[i] - avg[bin[i]]);
   for(int i=0;i<=maxBin;i++)
     stdev[i]=sqrt(stdev[i]/numEntriesPerBin[i]);
   
@@ -84,6 +85,7 @@ int main(int argc, char *argv[])
 void readFileToArrays(const char * fileType)
 {
   maxBin=0;
+  bool negBin=false;
   
   //regular two column data
   if(strcmp(fileType,"default")==0)
@@ -99,8 +101,15 @@ void readFileToArrays(const char * fileType)
                   val[i]=atof(str[1]);
                   if(bin[i]>maxBin)
                     maxBin=bin[i];
+                  if(bin[i]<0)
+                    if(negBin==false)
+                      {
+                        negBin=true;
+                        printf("x data contains negative values, these will be ignored...\n");
+                      }
                   i++;
                 }
+          numLines=i;
         }      
       else
         {
@@ -131,6 +140,12 @@ void readFileToArrays(const char * fileType)
                 val[i]=fileValues[1];
                 if(bin[i]>maxBin)
                   maxBin=bin[i];
+                if(bin[i]<0)
+                  if(negBin==false)
+                    {
+                      negBin=true;
+                      printf("x data contains negative values, these will be ignored...\n");
+                    }
                 i++;
               }
             else

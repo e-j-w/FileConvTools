@@ -164,7 +164,7 @@ void addTreeDataToOutHist()
 
       //if the branches are the same, copy data from one to the other
       if(same_branches)
-        for (int j=0;j<NSPECT;j++)
+        for (int j=0;j<MAXLEAVES;j++)
           data[j]=(double)gate_data[j];
 
       if(fwhmResponse==false)

@@ -5,6 +5,7 @@ txt2binnedavgtxt
 tree2mca
 treelist2mca
 tree2mca_gated
+tree2binnedavgtxt
 list
 *.mca
 *.spe

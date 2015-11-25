@@ -27,6 +27,12 @@ int main(int argc, char *argv[])
     }
     
   readConfigFile(argv[1],"tree2mca"); //grab data from the parameter file
+  if(numLeaf>MAXLEAVES)
+    {
+      printf("ERROR: Number of leaves specified is learger than the maximum value of %i!  Reduce the number of leaves requested, or increase the value of MAXLEAVES in tree2mca.h.\n",MAXLEAVES);
+      exit(-1);
+    }
+  
   
   for (int i=0;i<S32K;i++)
     for (int j=0;j<NSPECT;j++)
@@ -137,7 +143,7 @@ void addTreeDataToOutHist()
     {
       stree->GetEntry(i);
       for (int j=0;j<numLeaf;j++)
-        if(((data[j]*scaling)<S32K)&&((data[j]*scaling)>=0.0)&&(j<NSPECT))
+        if(((data[j]*scaling)<S32K)&&((data[j]*scaling)>=0.0)&&(j<MAXLEAVES))
           outHist[j][(int)(data[j]*scaling)]++; //fill the output histogram
     }
 

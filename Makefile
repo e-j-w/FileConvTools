@@ -1,7 +1,7 @@
 CFLAGS = -O -Wall -fPIC -ansi
 ROOT = $(shell $(ROOTSYS)/bin/root-config --glibs) $(shell $(ROOTSYS)/bin/root-config --cflags)
 
-all: tree2mca tree2mca_gated add_mca mca2txt txt2mca txt2binnedavgtxt
+all: tree2mca tree2mca_gated tree2binnedavgtxt add_mca mca2txt txt2mca txt2binnedavgtxt
 no_root: add_mca mca2txt txt2mca txt2binnedavgtxt
 
 tree2mca: tree2mca.c tree2mca.h read_config.c
@@ -16,11 +16,14 @@ add_mca: add_mca.c mca.h
 mca2txt: mca2txt.c mca.h
 	g++ mca2txt.c $(CFLAGS) -o mca2txt
 	
-txt2mca: txt2mca.c mca.h
+txt2mca: txt2mca.c mca.h read_config.c
 	g++ txt2mca.c $(CFLAGS) -o txt2mca
 
-txt2binnedavgtxt: txt2binnedavgtxt.c binnedavgtxt.h
+txt2binnedavgtxt: txt2binnedavgtxt.c binnedavgtxt.h read_config.c
 	g++ txt2binnedavgtxt.c $(CFLAGS) -o txt2binnedavgtxt
 
+tree2binnedavgtxt: tree2binnedavgtxt.c tree2binnedavgtxt.h read_config.c
+	g++ tree2binnedavgtxt.c $(CFLAGS) $(ROOT) -o tree2binnedavgtxt
+
 clean:
-	rm -rf *~ tree2mca tree2mca_gated add_mca mca2txt txt2mca txt2binnedavgtxt
+	rm -rf *~ tree2mca tree2mca_gated add_mca mca2txt txt2mca txt2binnedavgtxt tree2binnedavgtxt

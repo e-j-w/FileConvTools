@@ -1,0 +1,15 @@
+INPUT_TREE                  sample.root
+TREE_NAME                   depthtree
+X_BRANCH                    projStepData
+X_LEAF                      0
+Y_BRANCH                    projStepData
+Y_LEAF                      1
+BIN_SIZE                    5000     
+OUTPUT_FILE                 samplehist.txt
+
+This is a parameter file for the tree2binnedavgtxt code.
+Possible parameters can be inferred from the code in 
+read_config.c.  At some point I may write better 
+documentation for this.
+If you change the format of the file, prepare for unforseen
+consequences.

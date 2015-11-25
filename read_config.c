@@ -8,13 +8,17 @@ char str1[256],str2[256];
 char sort_branch[256],gate_branch[256],inp_filename[256],tree_name[256],out_filename[256],file_handler[256];
 int sort_leaf, gate_leaf, numLeaf;
 double scaling=1.0;
-double val_scaling=1.0;
-double binSize=1.0;
 bool listMode=false; //whether to sort tree files from a list 
 bool fwhmResponse=false; //whether to do energy convolution
 double fwhmF,fwhmG,fwhmH; //energy convolution parameters
 bool output_specified=false;
 bool file_handler_specified=false;
+
+//binnedavgtxt parameters
+char x_branch[256],y_branch[256];
+int x_leaf, y_leaf;
+double val_scaling=1.0;
+double binSize=1.0;
 
 void readConfigFile(const char * fileName,const char *configType) 
 {
@@ -80,6 +84,14 @@ void readConfigFile(const char * fileName,const char *configType)
         }
       if(strcmp(str1,"BIN_SIZE")==0)
         binSize=atof(str2);
+      if(strcmp(str1,"X_BRANCH")==0)
+        strcpy(x_branch,str2);
+      if(strcmp(str1,"Y_BRANCH")==0)
+        strcpy(y_branch,str2);
+      if(strcmp(str1,"X_LEAF")==0)
+        x_leaf=atoi(str2);
+      if(strcmp(str1,"Y_LEAF")==0)
+        y_leaf=atoi(str2);
     }
   fclose(config);
   
@@ -144,6 +156,14 @@ void readConfigFile(const char * fileName,const char *configType)
       printf("Input text file: %s\n",inp_filename);
       if(file_handler_specified==true)
         printf("Assuming input file format: %s\n",file_handler);
+      printf("Will use bin size of %f.\n",binSize);
+      printf("Will save output data to plaintext file: %s\n",out_filename);
+    }
+  if(strcmp(configType,"tree2binnedavgtxt")==0)
+    {
+      printf("Input tree file: %s\n",inp_filename);
+      printf("Taking x data from branch with name: %s, leaf #%i.\n",x_branch,x_leaf);
+      printf("Taking y data from branch with name: %s, leaf #%i.\n",y_branch,y_leaf);
       printf("Will use bin size of %f.\n",binSize);
       printf("Will save output data to plaintext file: %s\n",out_filename);
     }
