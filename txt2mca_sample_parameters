@@ -1,0 +1,12 @@
+INPUT_FILE                  sample.txt
+BIN_SCALING_FACTOR          1
+VALUE_SCALING_FACTOR        1
+FILE_TYPE_HANDLER           SRIM_EXYZ     
+OUTPUT_FILE                 sample.mca
+
+This is a parameter file for the txt2mca code.
+Possible parameters can be inferred from the code in 
+read_config.c.  At some point I may write better 
+documentation for this.
+If you change the format of the file, prepare for unforseen
+consequences.

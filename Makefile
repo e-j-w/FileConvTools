@@ -6,7 +6,6 @@ no_root: add_mca mca2txt txt2mca
 
 tree2mca: tree2mca.c tree2mca.h read_config.c
 	g++ tree2mca.c $(CFLAGS) $(ROOT) -o tree2mca
-
 	
 tree2mca_gated: tree2mca_gated.c tree2mca.h read_config.c
 	g++ tree2mca_gated.c $(CFLAGS) $(ROOT) -o tree2mca_gated
