@@ -9,6 +9,7 @@ char sort_branch[256],gate_branch[256],inp_filename[256],tree_name[256],out_file
 int sort_leaf, gate_leaf, numLeaf;
 double scaling=1.0;
 double val_scaling=1.0;
+double binSize=1.0;
 bool listMode=false; //whether to sort tree files from a list 
 bool fwhmResponse=false; //whether to do energy convolution
 double fwhmF,fwhmG,fwhmH; //energy convolution parameters
@@ -77,6 +78,8 @@ void readConfigFile(const char * fileName,const char *configType)
           file_handler_specified=true;
           strcpy(file_handler,str2);
         }
+      if(strcmp(str1,"BIN_SIZE")==0)
+        binSize=atof(str2);
     }
   fclose(config);
   
@@ -135,6 +138,14 @@ void readConfigFile(const char * fileName,const char *configType)
       if(val_scaling!=1.0)
         printf("Will scale bins by a factor of %f\n",val_scaling);
       printf("Will save output data to .mca file: %s\n",out_filename);
+    }
+  if(strcmp(configType,"txt2binnedavgtxt")==0)
+    {
+      printf("Input text file: %s\n",inp_filename);
+      if(file_handler_specified==true)
+        printf("Assuming input file format: %s\n",file_handler);
+      printf("Will use bin size of %f.\n",binSize);
+      printf("Will save output data to plaintext file: %s\n",out_filename);
     }
   
   printf("Finished reading parameter file...\n");

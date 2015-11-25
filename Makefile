@@ -1,8 +1,8 @@
-CFLAGS   = -O -Wall -fPIC -ansi $(shell $(ROOTSYS)/bin/root-config --cflags)
-ROOT =  $(shell $(ROOTSYS)/bin/root-config --glibs)
+CFLAGS = -O -Wall -fPIC -ansi
+ROOT = $(shell $(ROOTSYS)/bin/root-config --glibs) $(shell $(ROOTSYS)/bin/root-config --cflags)
 
-all: tree2mca tree2mca_gated add_mca mca2txt txt2mca
-no_root: add_mca mca2txt txt2mca
+all: tree2mca tree2mca_gated add_mca mca2txt txt2mca txt2binnedavgtxt
+no_root: add_mca mca2txt txt2mca txt2binnedavgtxt
 
 tree2mca: tree2mca.c tree2mca.h read_config.c
 	g++ tree2mca.c $(CFLAGS) $(ROOT) -o tree2mca
@@ -19,5 +19,8 @@ mca2txt: mca2txt.c mca.h
 txt2mca: txt2mca.c mca.h
 	g++ txt2mca.c $(CFLAGS) -o txt2mca
 
+txt2binnedavgtxt: txt2binnedavgtxt.c binnedavgtxt.h
+	g++ txt2binnedavgtxt.c $(CFLAGS) -o txt2binnedavgtxt
+
 clean:
-	rm -rf *~ tree2mca tree2mca_gated add_mca mca2txt txt2mca
+	rm -rf *~ tree2mca tree2mca_gated add_mca mca2txt txt2mca txt2binnedavgtxt

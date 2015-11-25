@@ -1,0 +1,11 @@
+INPUT_FILE                  EXYZ.txt
+BIN_SIZE                    5000
+FILE_TYPE_HANDLER           SRIM_EXYZ     
+OUTPUT_FILE                 EXYZhist.txt
+
+This is a parameter file for the txt2binnedavgtxt code.
+Possible parameters can be inferred from the code in 
+read_config.c.  At some point I may write better 
+documentation for this.
+If you change the format of the file, prepare for unforseen
+consequences.
