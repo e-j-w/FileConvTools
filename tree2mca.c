@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
   readConfigFile(argv[1],"tree2mca"); //grab data from the parameter file
   if(numLeaf>MAXLEAVES)
     {
-      printf("ERROR: Number of leaves specified is learger than the maximum value of %i!  Reduce the number of leaves requested, or increase the value of MAXLEAVES in tree2mca.h.\n",MAXLEAVES);
+      printf("ERROR: Number of leaves specified is learger than the maximum value of %i!  Reduce the number of leaves requested, or increase the value of MAXLEAVES in tree2mca.h and recompile.\n",MAXLEAVES);
       exit(-1);
     }
   

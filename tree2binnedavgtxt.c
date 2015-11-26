@@ -1,11 +1,10 @@
 #include "tree2binnedavgtxt.h"
 #include "read_config.c"
 
-double val[MAXFILELENGTH];
-double avg[MAXFILELENGTH],stdev[MAXFILELENGTH];
-int bin[MAXFILELENGTH],numEntriesPerBin[MAXFILELENGTH];
+double val;
+double avg[MAXNUMBINS],stdev[MAXNUMBINS];
+int bin,numEntriesPerBin[MAXNUMBINS];
 char str[2][256];
-double fileValues[MAXNUMCOLUMNS];
 FILE *input;
 
 int main(int argc, char *argv[])
@@ -31,8 +30,6 @@ int main(int argc, char *argv[])
     }
 
   //initialize arrays
-  memset(bin,0,sizeof(bin));
-  memset(val,0,sizeof(val));
   memset(avg,0,sizeof(avg));
   memset(stdev,0,sizeof(stdev));
   memset(numEntriesPerBin,0,sizeof(numEntriesPerBin));
@@ -70,45 +67,30 @@ int main(int argc, char *argv[])
   
   //read data from tree into data arrays
   maxBin=0;
-  bool negBin=false;
+  negBin=false;
   for(int i=0;i<stree->GetEntries();i++)
-    if(i<MAXFILELENGTH)
-      { 
-        stree->GetEntry(i);
-        
-        //if the branches are the same, copy data from one to the other
-        if(same_branches)
-          for (int j=0;j<MAXLEAVES;j++)
-            yVal[j]=xVal[j];
-          
-        bin[i]=(int)(xVal[x_leaf]/binSize);
-        val[i]=yVal[y_leaf];
-        if(bin[i]>maxBin)
-          maxBin=bin[i];
-        if(bin[i]<0)
-          if(negBin==false)
-            {
-              negBin=true;
-              printf("x data contains negative values, these will be ignored...\n");
-            }
-          
-      }
+    { 
+      getXYTreedata(i);
+      //construct running sums
+      if(bin>=0)
+        {
+          avg[bin]+=val;
+          numEntriesPerBin[bin]++;
+        }
+         
+    }
   
-  //build the average and standard deviation arrays
-  for(int i=0;i<stree->GetEntries();i++)
-    if(bin[i]>=0)
-      {
-        avg[bin[i]]+=val[i];
-        numEntriesPerBin[bin[i]]++;
-      }
+  //compute the average and standard deviation arrays
   for(int i=0;i<=maxBin;i++)
     avg[i]=avg[i]/numEntriesPerBin[i];
   for(int i=0;i<stree->GetEntries();i++)
-    if(bin[i]>=0)
-      stdev[bin[i]]+=(val[i] - avg[bin[i]])*(val[i] - avg[bin[i]]);
+    { 
+      getXYTreedata(i);
+      if(bin>=0)
+        stdev[bin]+=(val-avg[bin])*(val-avg[bin]);
+    }
   for(int i=0;i<=maxBin;i++)
     stdev[i]=sqrt(stdev[i]/numEntriesPerBin[i]);
-  
   
   //write the data to the output file on disk
   if((output=fopen(out_filename,"w"))==NULL)
@@ -124,4 +106,32 @@ int main(int argc, char *argv[])
   fclose(output);
 
   return(0); //great success
+}
+
+//function which gets data from the ROOT tree at the specified entry and
+//puts it in the bin and val arrays
+void getXYTreedata(int entry)
+{
+  stree->GetEntry(entry);
+        
+  //if the branches are the same, copy data from one to the other
+  if(same_branches)
+    for (int j=0;j<MAXLEAVES;j++)
+      yVal[j]=xVal[j];
+          
+  bin=(int)(xVal[x_leaf]/binSize);
+  val=yVal[y_leaf];
+  if(bin>maxBin)
+    maxBin=bin;
+  if(bin<0)
+    if(negBin==false)
+      {
+        negBin=true;
+        printf("x data contains negative values, these will be ignored...\n");
+      }
+  if(maxBin>MAXNUMBINS)
+    {
+      printf("ERROR: The number of bins in the output histogram is larger than the maximum value of %i!  Increase the bin size in the parameter file, or increase the value of MAXNUMBINS in tree2binnedavg.h and recompile.\n",MAXNUMBINS);
+      exit(-1);
+    }
 }
