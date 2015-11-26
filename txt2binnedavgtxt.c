@@ -39,9 +39,6 @@ int main(int argc, char *argv[])
     }
     
   //read data from the input file
-  numLines=0;
-  maxBin=0;
-  
   setupFileRead();
   while(!readFileData(file_handler))
     if(bin>=0)
@@ -52,10 +49,10 @@ int main(int argc, char *argv[])
   printf("Read %i lines of data from input file, sorted into %i bins.\n",numLines,maxBin);
   
   
-  //compute the average and standard deviation arrays
-  setupFileRead();
+  //compute the average and standard deviation arrays 
   for(int i=0;i<=maxBin;i++)
     avg[i]=avg[i]/numEntriesPerBin[i];
+  setupFileRead();
   while(!readFileData(file_handler))
     if(bin>=0)
       stdev[bin]+=(val-avg[bin])*(val-avg[bin]);
@@ -74,7 +71,12 @@ int main(int argc, char *argv[])
   fprintf(output,"Bin size: %f\n",binSize);
   fprintf(output,"---------------\nBIN VALUE STDEV\n");
   for(int i=0;i<maxBin;i++)
-    fprintf(output,"%i %f %f\n",i,avg[i],stdev[i]);
+    {
+      if(numEntriesPerBin[i]>0)
+        fprintf(output,"%i %f %f\n",i,avg[i],stdev[i]);
+      else
+        printf("No entries in histogram bin %i, skipping this bin!\n",i);
+    }
   fclose(output);
 
   return(0); //great success
@@ -152,6 +154,9 @@ bool readFileData(const char * fileType)
 //sets up the file for reading again
 void setupFileRead()
 {
+  skipHeader=true;
+  numLines=0;
+  maxBin=0;
   if(fseek(input, 0, SEEK_SET)) 
     {
       printf("Error seeking to start of file");

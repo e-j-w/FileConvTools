@@ -98,7 +98,12 @@ int main(int argc, char *argv[])
   fprintf(output,"Bin size: %f\n",binSize);
   fprintf(output,"---------------\nBIN VALUE STDEV\n");
   for(int i=0;i<maxBin;i++)
-    fprintf(output,"%i %f %f\n",i,avg[i],stdev[i]);
+    {
+      if(numEntriesPerBin[i]>0)
+        fprintf(output,"%i %f %f\n",i,avg[i],stdev[i]);
+      else
+        printf("No entries in histogram bin %i, skipping this bin!\n",i);
+    }
   fclose(output);
 
   return(0); //great success
