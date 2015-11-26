@@ -1,12 +1,6 @@
-#include "binnedavgtxt.h"
+#include "txt2binnedavgtxt.h"
 #include "read_config.c"
 
-double val[MAXFILELENGTH];
-double avg[MAXFILELENGTH],stdev[MAXFILELENGTH];
-int bin[MAXFILELENGTH],numEntriesPerBin[MAXFILELENGTH];
-char str[2][256];
-double fileValues[MAXNUMCOLUMNS];
-FILE *input;
 
 int main(int argc, char *argv[])
 {
@@ -21,8 +15,6 @@ int main(int argc, char *argv[])
     }
 
   //initialize arrays
-  memset(bin,0,sizeof(bin));
-  memset(val,0,sizeof(val));
   memset(avg,0,sizeof(avg));
   memset(stdev,0,sizeof(stdev));
   memset(numEntriesPerBin,0,sizeof(numEntriesPerBin));
@@ -35,6 +27,9 @@ int main(int argc, char *argv[])
       printf("ERROR: Bin size cannot be 0 or negative!\n");
       exit(-1);
     }
+  if(file_handler_specified==false)
+    strcpy(file_handler,"default");
+  
   
   //read in data from the .txt file
   if((input=fopen(inp_filename,"r"))==NULL)
@@ -44,27 +39,30 @@ int main(int argc, char *argv[])
     }
     
   //read data from the input file
-  if(file_handler_specified==true)
-    readFileToArrays(file_handler);
-  else
-    readFileToArrays("default");
-  fclose(input);
+  numLines=0;
+  maxBin=0;
   
-  //build the average and standard deviation arrays
-  for(int i=0;i<numLines;i++)
-    if(bin[i]>=0)
+  setupFileRead();
+  while(!readFileData(file_handler))
+    if(bin>=0)
       {
-        avg[bin[i]]+=val[i];
-        numEntriesPerBin[bin[i]]++;
+        avg[bin]+=val; //construct running sums
+        numEntriesPerBin[bin]++;
       }
+  printf("Read %i lines of data from input file, sorted into %i bins.\n",numLines,maxBin);
+  
+  
+  //compute the average and standard deviation arrays
+  setupFileRead();
   for(int i=0;i<=maxBin;i++)
     avg[i]=avg[i]/numEntriesPerBin[i];
-  for(int i=0;i<numLines;i++)
-    if(bin[i]>=0)
-      stdev[bin[i]]+=(val[i] - avg[bin[i]])*(val[i] - avg[bin[i]]);
+  while(!readFileData(file_handler))
+    if(bin>=0)
+      stdev[bin]+=(val-avg[bin])*(val-avg[bin]);
   for(int i=0;i<=maxBin;i++)
     stdev[i]=sqrt(stdev[i]/numEntriesPerBin[i]);
   
+  fclose(input);
   
   //write the data to the output file on disk
   if((output=fopen(out_filename,"w"))==NULL)
@@ -82,79 +80,81 @@ int main(int argc, char *argv[])
   return(0); //great success
 }
 
-void readFileToArrays(const char * fileType)
-{
-  maxBin=0;
-  bool negBin=false;
+//read data from the file
+//returns true when end of file is reached
+bool readFileData(const char * fileType)
+{ 
   
   //regular two column data
   if(strcmp(fileType,"default")==0)
     {
-      if(fgets(str[0],256,input)!=NULL)
-        {
-          int i=0;
-          while(fscanf(input,"%s %s\n",str[0],str[1])!=EOF)
-            if(atof(str[1])!=0)//ignore values of 0 and text strings
-	            if(i<MAXFILELENGTH)
-	              {
-                  bin[i]=(int)(atof(str[0])/binSize);
-                  val[i]=atof(str[1]);
-                  if(bin[i]>maxBin)
-                    maxBin=bin[i];
-                  if(bin[i]<0)
-                    if(negBin==false)
-                      {
-                        negBin=true;
-                        printf("x data contains negative values, these will be ignored...\n");
-                      }
-                  i++;
-                }
-          numLines=i;
-        }      
+      int numFileValues = fscanf(input,"%s %s\n",str[0],str[1]);
+      if(numFileValues!=EOF)
+	      if(numFileValues==2)
+	        {
+            bin=(int)(atof(str[0])/binSize);
+            val=atof(str[1]);
+            if(bin>maxBin)
+              maxBin=bin;
+            numLines++;
+          }
+        else
+          {
+            printf("Unexpected number of entries on line following data point %i, skipping line.\n",numLines);
+            if(fgets(str[0],256,input)!=NULL);//skip line
+          }
       else
-        {
-        	printf("Wrong structure of file %s, aborting...\n",inp_filename);
-          exit(-1);
-        }
+        return true;
     }
     
   //SRIM energy vs depth data file
   if(strcmp(fileType,"SRIM_EXYZ")==0)
     {
-      int i=0;
           
-      //skip file header
-      printf("Skipping input file header...\n");
-      for(i=0;i<15;i++)
-        if(fgets(str[0],256,input)!=NULL);//skip line (encapsulated in if to avoid comiler warning)
-          
-      i=0;
-      int numFileValues=0;
-      while(numFileValues!=EOF)
-        if(i<MAXFILELENGTH)
+      //skip file header if neccesary
+      if(skipHeader)
+        {
+          skipHeader=false;
+          printf("Skipping input file header...\n");
+          for(int i=0;i<15;i++)
+            if(fgets(str[0],256,input)!=NULL);//skip line (encapsulated in if to avoid comiler warning)
+        }
+      
+      int numFileValues = fscanf(input,"%lf %lf %lf %lf %lf %lf %lf\n",&fileValues[0],&fileValues[1],&fileValues[2],&fileValues[3],&fileValues[4],&fileValues[5],&fileValues[6]);
+      if(numFileValues!=EOF)
+	      if(numFileValues==7)
 	        {
-	          numFileValues = fscanf(input,"%lf %lf %lf %lf %lf %lf %lf\n",&fileValues[0],&fileValues[1],&fileValues[2],&fileValues[3],&fileValues[4],&fileValues[5],&fileValues[6]);
-	          if(numFileValues==7)
-	            {
-                bin[i]=(int)(fileValues[2]/binSize);
-                val[i]=fileValues[1];
-                if(bin[i]>maxBin)
-                  maxBin=bin[i];
-                if(bin[i]<0)
-                  if(negBin==false)
-                    {
-                      negBin=true;
-                      printf("x data contains negative values, these will be ignored...\n");
-                    }
-                i++;
-              }
-            else
-              {
-                printf("Unexpected number of entries on line following data point %i, skipping line.\n",i);
-                if(fgets(str[0],256,input)!=NULL);//skip line
-              }
+            bin=(int)(fileValues[2]/binSize);
+            val=fileValues[1];
+            if(bin>maxBin)
+              maxBin=bin;
+            numLines++;
           }
-      numLines=i;
-      printf("Read %i lines of data from input file, sorted into %i bins.\n",numLines,maxBin);
+        else
+          {
+            printf("Unexpected number of entries on line following data point %i, skipping line.\n",numLines);
+            if(fgets(str[0],256,input)!=NULL);//skip line
+          }
+      else
+        return true;
+    }
+    
+  if(bin<0)
+    if(negBin==false)
+      {
+        negBin=true;
+        printf("x data contains negative values, these will be ignored...\n");
+      }
+    
+  return false;
+}
+
+//sets up the file for reading again
+void setupFileRead()
+{
+  if(fseek(input, 0, SEEK_SET)) 
+    {
+      printf("Error seeking to start of file");
+      exit(-1);
     }
 }

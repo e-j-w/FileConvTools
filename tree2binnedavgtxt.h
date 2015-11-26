@@ -3,7 +3,6 @@
 #include <math.h>
 
 //ROOT stuff
-#include "TRandom.h"
 #include "TTree.h"
 #include "TBranch.h"
 #include "TFile.h"
@@ -18,15 +17,26 @@
 //forward declarations
 void getXYTreedata(int);
 
-int maxBin;
-int numLines;
-bool negBin;
-
+//ROOT
 bool same_branches;
 Double_t xVal[MAXLEAVES],yVal[MAXLEAVES];
 TTree *stree;
 TApplication *theApp;
-TRandom *randGen;
+
+//file I/O
+FILE *input;
+char str[2][256];
+int maxBin;
+int numLines;
+bool negBin;
+double val;
+int bin;
+
+//histogram bin calculation
+double avg[MAXNUMBINS],stdev[MAXNUMBINS];
+int numEntriesPerBin[MAXNUMBINS];
+
+
 
 
 

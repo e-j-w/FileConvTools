@@ -19,7 +19,7 @@ mca2txt: mca2txt.c mca.h
 txt2mca: txt2mca.c mca.h read_config.c
 	g++ txt2mca.c $(CFLAGS) -o txt2mca
 
-txt2binnedavgtxt: txt2binnedavgtxt.c binnedavgtxt.h read_config.c
+txt2binnedavgtxt: txt2binnedavgtxt.c txt2binnedavgtxt.h read_config.c
 	g++ txt2binnedavgtxt.c $(CFLAGS) -o txt2binnedavgtxt
 
 tree2binnedavgtxt: tree2binnedavgtxt.c tree2binnedavgtxt.h read_config.c

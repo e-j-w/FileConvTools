@@ -1,11 +1,7 @@
 #include "tree2binnedavgtxt.h"
 #include "read_config.c"
 
-double val;
-double avg[MAXNUMBINS],stdev[MAXNUMBINS];
-int bin,numEntriesPerBin[MAXNUMBINS];
-char str[2][256];
-FILE *input;
+
 
 int main(int argc, char *argv[])
 {
