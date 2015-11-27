@@ -66,11 +66,10 @@ int main(int argc, char *argv[])
   negBin=false;
   for(int i=0;i<stree->GetEntries();i++)
     { 
-      getXYTreedata(i);
-      //construct running sums
-      if(bin>=0)
+      getXYTreedata(i);    
+      if((bin>=0)&&(skipLine==false))
         {
-          avg[bin]+=val;
+          avg[bin]+=val;//construct running sums
           numEntriesPerBin[bin]++;
         }
          
@@ -82,7 +81,7 @@ int main(int argc, char *argv[])
   for(int i=0;i<stree->GetEntries();i++)
     { 
       getXYTreedata(i);
-      if(bin>=0)
+      if((bin>=0)&&(skipLine==false))
         stdev[bin]+=(val-avg[bin])*(val-avg[bin]);
     }
   for(int i=0;i<=maxBin;i++)
@@ -113,23 +112,31 @@ int main(int argc, char *argv[])
 //puts it in the bin and val arrays
 void getXYTreedata(int entry)
 {
+  skipLine=false;
   stree->GetEntry(entry);
         
   //if the branches are the same, copy data from one to the other
   if(same_branches)
     for (int j=0;j<MAXLEAVES;j++)
       yVal[j]=xVal[j];
-          
-  bin=(int)(xVal[x_leaf]/binSize);
-  val=yVal[y_leaf];
-  if(bin>maxBin)
-    maxBin=bin;
+      
+  if((xVal[x_leaf]<max_x)||(use_max_x==false))
+	  {        
+      bin=(int)(xVal[x_leaf]/binSize);
+      val=yVal[y_leaf];
+      if(bin>maxBin)
+        maxBin=bin;
+    }
+  else
+    skipLine=true;
+    
   if(bin<0)
     if(negBin==false)
       {
         negBin=true;
         printf("x data contains negative values, these will be ignored...\n");
       }
+      
   if(maxBin>MAXNUMBINS)
     {
       printf("ERROR: The number of bins in the output histogram is larger than the maximum value of %i!  Increase the bin size in the parameter file, or increase the value of MAXNUMBINS in tree2binnedavg.h and recompile.\n",MAXNUMBINS);

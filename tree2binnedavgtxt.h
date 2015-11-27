@@ -31,6 +31,7 @@ int numLines;
 bool negBin;
 double val;
 int bin;
+bool skipLine;
 
 //histogram bin calculation
 double avg[MAXNUMBINS],stdev[MAXNUMBINS];

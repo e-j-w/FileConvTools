@@ -4,6 +4,7 @@ X_BRANCH                    projStepData
 X_LEAF                      0
 Y_BRANCH                    projStepData
 Y_LEAF                      1
+MAX_X_VALUE                 100000
 BIN_SIZE                    5000     
 OUTPUT_FILE                 samplehist.txt
 

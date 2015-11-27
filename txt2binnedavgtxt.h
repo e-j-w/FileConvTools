@@ -20,6 +20,7 @@ bool skipHeader=true;
 bool negBin=false;
 double val;
 int bin;
+bool skipLine;
 
 //histogram bin calculation
 double avg[MAXFILELENGTH],stdev[MAXFILELENGTH];

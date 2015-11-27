@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
   //read data from the input file
   setupFileRead();
   while(!readFileData(file_handler))
-    if(bin>=0)
+    if((bin>=0)&&(skipLine==false))
       {
         avg[bin]+=val; //construct running sums
         numEntriesPerBin[bin]++;
@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
     avg[i]=avg[i]/numEntriesPerBin[i];
   setupFileRead();
   while(!readFileData(file_handler))
-    if(bin>=0)
+    if((bin>=0)&&(skipLine==false))
       stdev[bin]+=(val-avg[bin])*(val-avg[bin]);
   for(int i=0;i<=maxBin;i++)
     stdev[i]=sqrt(stdev[i]/numEntriesPerBin[i]);
@@ -85,7 +85,8 @@ int main(int argc, char *argv[])
 //read data from the file
 //returns true when end of file is reached
 bool readFileData(const char * fileType)
-{ 
+{
+  skipLine=false; 
   
   //regular two column data
   if(strcmp(fileType,"default")==0)
@@ -94,11 +95,16 @@ bool readFileData(const char * fileType)
       if(numFileValues!=EOF)
 	      if(numFileValues==2)
 	        {
-            bin=(int)(atof(str[0])/binSize);
-            val=atof(str[1]);
-            if(bin>maxBin)
-              maxBin=bin;
-            numLines++;
+	          if((atof(str[0])<max_x)||(use_max_x==false))
+	            {
+                bin=(int)(atof(str[0])/binSize);
+                val=atof(str[1]);
+                if(bin>maxBin)
+                  maxBin=bin;
+                numLines++;
+              }
+            else
+              skipLine=true;
           }
         else
           {
@@ -126,16 +132,22 @@ bool readFileData(const char * fileType)
       if(numFileValues!=EOF)
 	      if(numFileValues==7)
 	        {
-            bin=(int)(fileValues[2]/binSize);
-            val=fileValues[1];
-            if(bin>maxBin)
-              maxBin=bin;
-            numLines++;
+	          if((fileValues[2]<max_x)||(use_max_x==false))
+	            {
+                bin=(int)(fileValues[2]/binSize);
+                val=fileValues[1];
+                if(bin>maxBin)
+                  maxBin=bin;
+                numLines++;
+              }
+            else
+              skipLine=true;
           }
         else
           {
             printf("Unexpected number of entries on line following data point %i, skipping line.\n",numLines);
             if(fgets(str[0],256,input)!=NULL);//skip line
+            skipLine=true;
           }
       else
         return true;

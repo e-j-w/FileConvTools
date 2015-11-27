@@ -1,6 +1,7 @@
 INPUT_FILE                  EXYZ.txt
 BIN_SIZE                    5000
-FILE_TYPE_HANDLER           SRIM_EXYZ     
+MAX_X_VALUE                 100000
+FILE_TYPE_HANDLER           SRIM_EXYZ
 OUTPUT_FILE                 EXYZhist.txt
 
 This is a parameter file for the txt2binnedavgtxt code.

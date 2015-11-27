@@ -19,6 +19,8 @@ char x_branch[256],y_branch[256];
 int x_leaf, y_leaf;
 double val_scaling=1.0;
 double binSize=1.0;
+double max_x;
+bool use_max_x=false;
 
 void readConfigFile(const char * fileName,const char *configType) 
 {
@@ -92,6 +94,11 @@ void readConfigFile(const char * fileName,const char *configType)
         x_leaf=atoi(str2);
       if(strcmp(str1,"Y_LEAF")==0)
         y_leaf=atoi(str2);
+      if(strcmp(str1,"MAX_X_VALUE")==0)
+        {
+          use_max_x=true;
+          max_x=atof(str2);
+        }
     }
   fclose(config);
   
@@ -157,6 +164,8 @@ void readConfigFile(const char * fileName,const char *configType)
       if(file_handler_specified==true)
         printf("Assuming input file format: %s\n",file_handler);
       printf("Will use bin size of %f.\n",binSize);
+      if(use_max_x)
+        printf("Ignoring all x values larger than: %f\n",max_x);
       printf("Will save output data to plaintext file: %s\n",out_filename);
     }
   if(strcmp(configType,"tree2binnedavgtxt")==0)
@@ -165,6 +174,8 @@ void readConfigFile(const char * fileName,const char *configType)
       printf("Taking x data from branch with name: %s, leaf #%i.\n",x_branch,x_leaf);
       printf("Taking y data from branch with name: %s, leaf #%i.\n",y_branch,y_leaf);
       printf("Will use bin size of %f.\n",binSize);
+      if(use_max_x)
+        printf("Ignoring all x values larger than: %f\n",max_x);
       printf("Will save output data to plaintext file: %s\n",out_filename);
     }
   
