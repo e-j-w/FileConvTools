@@ -1,4 +1,5 @@
 add_mca
+contract_mca
 mca2txt
 txt2mca
 txt2binnedavgtxt

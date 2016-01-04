@@ -40,7 +40,7 @@ void readConfigFile(const char * fileName,const char *configType)
       if(strcmp(str1,"SORT_LEAF")==0)
         sort_leaf=atoi(str2);
       if(strcmp(str1,"GATE_LEAF")==0)
-        sort_leaf=atoi(str2);
+        gate_leaf=atoi(str2);
       if(strcmp(str1,"NUMBER_OF_LEAVES")==0)
         numLeaf=atoi(str2);
       if((strcmp(str1,"INPUT_TREE")==0)||(strcmp(str1,"INPUT_FILE")==0))
