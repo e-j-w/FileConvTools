@@ -1,7 +1,6 @@
 #include "mca.h"
 
 int inpHist[NSPECT][S32K];
-char str[256];
   
 int main(int argc, char *argv[])
 {
@@ -20,7 +19,6 @@ int main(int argc, char *argv[])
     }
 
   //read in command line arguments
-  //num_spect=atoi(argv[1]);
   cntr=atoi(argv[2]);
   printf("Using a contraction factor of %i.\n",cntr);
 
