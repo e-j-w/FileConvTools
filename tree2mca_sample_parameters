@@ -1,7 +1,6 @@
 INPUT_TREE                  0p2a_30MeVSRIMcomp_run1.root
 TREE_NAME                   tree
-SORT_BRANCH                 resDec
-NUMBER_OF_LEAVES            3
+SORT_PATH                   partCsIHit/E
 SORT_DATA_SCALING_FACTOR    100000
 SORT_DATA_FWHM_RESPONSE     no
 FWHM_F                      3.1841

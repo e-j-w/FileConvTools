@@ -1,7 +1,6 @@
 #include "tree2mca.h"
 #include "read_config.c"
 
-Int_t gate_data[NSPECT];
 char str[256];
 
 int main(int argc, char *argv[])
@@ -15,8 +14,6 @@ int main(int argc, char *argv[])
   int ac;
   char* av[10];
   theApp=new TApplication("App", &ac, av);
-
-  same_branches = false;
 
   FILE *list, *output;
   TFile *inp;
@@ -33,9 +30,6 @@ int main(int argc, char *argv[])
     }
 
   readConfigFile(argv[1],"tree2mca_gated"); //grab data from the parameter file
-  
-  if(strcmp(sort_branch,gate_branch)==0)
-    same_branches=true;
   
   //initialize the output histogram
   for (int i=0;i<NSPECT;i++)
@@ -67,12 +61,24 @@ int main(int argc, char *argv[])
                 }
             }
           printf("Tree in %s read out.\n",str);
-    
-          stree->ResetBranchAddresses();
-          if (!same_branches)
-            stree->SetBranchAddress(sort_branch,data);
-          stree->SetBranchAddress(gate_branch,gate_data);
-          printf("Branch address set.\n");
+          
+          if((sortLeaf = stree->GetLeaf(sort_path))==NULL)
+            if((sortBranch = stree->GetBranch(sort_path))==NULL)
+              {
+                printf("ERROR: Sort data path '%s' doesn't correspond to a branch or leaf in the tree!\n",sort_path);
+                exit(-1);
+              }
+          if((gateLeaf = stree->GetLeaf(gate_path))==NULL)
+            if((gateBranch = stree->GetBranch(gate_path))==NULL)
+              {
+                printf("ERROR: Gate data path '%s' doesn't correspond to a branch or leaf in the tree!\n",gate_path);
+                exit(-1);
+              }
+          if(sortLeaf==NULL)
+            sortLeaf = (TLeaf*)sortBranch->GetListOfLeaves()->First(); //get the first leaf from the specified branch       
+          if(gateLeaf==NULL)
+            gateLeaf = (TLeaf*)gateBranch->GetListOfLeaves()->First(); //get the first leaf from the specified branch
+          printf("Paths to sort and gate data set.\n");
           printf("Number of tree entries: %Ld\n",stree->GetEntries());
 
           addTreeDataToOutHist();
@@ -115,11 +121,23 @@ int main(int argc, char *argv[])
         }
       printf("Tree in %s read out.\n",inp_filename);
 
-      stree->ResetBranchAddresses();
-      if (!same_branches)
-        stree->SetBranchAddress(sort_branch,data);
-      stree->SetBranchAddress(gate_branch,gate_data);
-      printf("Branch address set.\n");
+      if((sortLeaf = stree->GetLeaf(sort_path))==NULL)
+        if((sortBranch = stree->GetBranch(sort_path))==NULL)
+          {
+            printf("ERROR: Sort data path '%s' doesn't correspond to a branch or leaf in the tree!\n",sort_path);
+            exit(-1);
+          }
+      if((gateLeaf = stree->GetLeaf(gate_path))==NULL)
+        if((gateBranch = stree->GetBranch(gate_path))==NULL)
+          {
+            printf("ERROR: Gate data path '%s' doesn't correspond to a branch or leaf in the tree!\n",gate_path);
+            exit(-1);
+          }
+      if(sortLeaf==NULL)
+        sortLeaf = (TLeaf*)sortBranch->GetListOfLeaves()->First(); //get the first leaf from the specified branch
+      if(gateLeaf==NULL)
+        gateLeaf = (TLeaf*)gateBranch->GetListOfLeaves()->First(); //get the first leaf from the specified branch
+      printf("Paths to sort and gate data set.\n");
       printf("Number of tree entries: %Ld\n",stree->GetEntries());
       
       addTreeDataToOutHist();
@@ -158,27 +176,28 @@ int main(int argc, char *argv[])
 //the output histogram.
 void addTreeDataToOutHist()
 {
+  Double_t sort_value;
+  Int_t gate_value;
+
   for (int i=0;i<stree->GetEntries();i++)
     {
       stree->GetEntry(i);
-
-      //if the branches are the same, copy data from one to the other
-      if(same_branches)
-        for (int j=0;j<MAXLEAVES;j++)
-          data[j]=(double)gate_data[j];
+      
+      sort_value = sortLeaf->GetValue(0);
+      gate_value = gateLeaf->GetValue(0);
 
       if(fwhmResponse==false)
         for (int j=0;j<NSPECT;j++)
-          if(gate_data[gate_leaf]==j)
-            if((data[sort_leaf]*scaling)>=0.0)
-              if((data[sort_leaf]*scaling)<S32K)
-                outHist[j][(int)(data[sort_leaf]*scaling)]++; //fill the output histogram
+          if(gate_value==j)
+            if((sort_value*scaling)>=0.0)
+              if((sort_value*scaling)<S32K)
+                outHist[j][(int)(sort_value*scaling)]++; //fill the output histogram
       if(fwhmResponse==true)
         for (int j=0;j<NSPECT;j++)
-          if(gate_data[gate_leaf]==j)
-            if((data[sort_leaf]*scaling)>=0.0)
-              if((data[sort_leaf]*scaling)<S32K)
-                outHist[j][(int)(FWHM_response(data[sort_leaf]*scaling))]++; //fill the output histogram
+          if(gate_value==j)
+            if((sort_value*scaling)>=0.0)
+              if((sort_value*scaling)<S32K)
+                outHist[j][(int)(FWHM_response(sort_value*scaling))]++; //fill the output histogram
     }
 
 }

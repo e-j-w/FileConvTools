@@ -5,6 +5,7 @@
 //ROOT stuff
 #include "TRandom.h"
 #include "TTree.h"
+#include "TLeaf.h"
 #include "TBranch.h"
 #include "TFile.h"
 #include "TApplication.h"
@@ -17,10 +18,10 @@
 void addTreeDataToOutHist();
 double FWHM_response(double);
 
-bool same_branches;
 int outHist[NSPECT][S32K];
-Double_t data[MAXLEAVES];
 TTree *stree;
+TLeaf *sortLeaf, *gateLeaf;
+TBranch *sortBranch, *gateBranch;
 TApplication *theApp;
 TRandom *randGen;
 

@@ -22,21 +22,15 @@ int main(int argc, char *argv[])
   if(argc!=2)
     {
       printf("tree2mca parameter_file\n");
-      printf("\nTakes the specified branch of the specified ROOT tree file(s) and converts to an .mca file, where each spectrum in the .mca file is a leaf in the ROOT tree branch.\n");
+      printf("\nTakes the specified branch/leaf of the specified ROOT tree file(s) and converts to a single spectrum .mca file.\n");
       exit(-1);
     }
     
   readConfigFile(argv[1],"tree2mca"); //grab data from the parameter file
-  if(numLeaf>MAXLEAVES)
-    {
-      printf("ERROR: Number of leaves specified is learger than the maximum value of %i!  Reduce the number of leaves requested, or increase the value of MAXLEAVES in tree2mca.h and recompile.\n",MAXLEAVES);
-      exit(-1);
-    }
   
   
   for (int i=0;i<S32K;i++)
-    for (int j=0;j<NSPECT;j++)
-      outHist[j][i]=0; //initialize all elements to 0
+    outHist[0][i]=0; //initialize all elements to 0
 
   //sort list of ROOT files
   if(listMode==true)
@@ -62,12 +56,17 @@ int main(int argc, char *argv[])
                 }
             }
           printf("Tree in %s read out.\n",str);
-    
-          stree->ResetBranchAddresses();
-          stree->SetBranchAddress(sort_branch,data);
-          printf("Branch address set.\n");
-          printf("Number of tree entries: %Ld\n",stree->GetEntries());
-
+          
+          if((sortLeaf = stree->GetLeaf(sort_path))==NULL)
+            if((sortBranch = stree->GetBranch(sort_path))==NULL)
+              {
+                printf("ERROR: Sort data path '%s' doesn't correspond to a branch or leaf in the tree!\n",sort_path);
+                exit(-1);
+              }
+          if(sortLeaf==NULL)
+            sortLeaf = (TLeaf*)sortBranch->GetListOfLeaves()->First(); //get the first leaf from the specified branch       
+          printf("Paths to sort and gate data set.\n");
+          printf("Number of tree entries: %Ld\n",stree->GetEntries());          
 
           addTreeDataToOutHist();
           
@@ -109,11 +108,9 @@ int main(int argc, char *argv[])
         }
       printf("Tree in %s read out.\n",inp_filename);
 
-      stree->ResetBranchAddresses();
-      stree->SetBranchAddress(sort_branch,data);
-      printf("Branch address set.\n");
+      sortLeaf = stree->GetLeaf(sort_path);
+      printf("Path to sort data set.\n");
       printf("Number of tree entries: %Ld\n",stree->GetEntries());
-
       
       addTreeDataToOutHist();
     }
@@ -126,9 +123,7 @@ int main(int argc, char *argv[])
       printf("ERROR: Cannot open the output .mca file!\n");
       exit(-1);
     }
-  for (int i=0;i<numLeaf;i++)
-    if(i<NSPECT)
-      fwrite(outHist[i],S32K*sizeof(int),1,output);
+  fwrite(outHist[0],S32K*sizeof(int),1,output);
   fclose(output);
 
   return(0); //great success
@@ -139,12 +134,14 @@ int main(int argc, char *argv[])
 //the output histogram.
 void addTreeDataToOutHist()
 {
+  Double_t sort_value;
+  
   for (int i=0;i<stree->GetEntries();i++)
     {
       stree->GetEntry(i);
-      for (int j=0;j<numLeaf;j++)
-        if(((data[j]*scaling)<S32K)&&((data[j]*scaling)>=0.0)&&(j<MAXLEAVES))
-          outHist[j][(int)(data[j]*scaling)]++; //fill the output histogram
+      sort_value = sortLeaf->GetValue(0);
+      if(((sort_value*scaling)<S32K)&&((sort_value*scaling)>=0.0))
+        outHist[0][(int)(sort_value*scaling)]++; //fill the output histogram
     }
 
 }

@@ -1,9 +1,7 @@
 INPUT_TREE_LIST             list
 TREE_NAME                   tree
-SORT_BRANCH                 GEAddBack
-SORT_LEAF                   0
-GATE_BRANCH                 GRingAddBack
-GATE_LEAF                   0
+SORT_PATH                   partCsIHit/E
+GATE_PATH                   partCsIHit/Id
 SORT_DATA_SCALING_FACTOR    2
 SORT_DATA_FWHM_RESPONSE     no
 FWHM_F                      3.1841
