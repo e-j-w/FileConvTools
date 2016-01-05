@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
               }
           if(sortLeaf==NULL)
             sortLeaf = (TLeaf*)sortBranch->GetListOfLeaves()->First(); //get the first leaf from the specified branch       
-          printf("Paths to sort and gate data set.\n");
+          printf("Paths to sort data set.\n");
           printf("Number of tree entries: %Ld\n",stree->GetEntries());          
 
           addTreeDataToOutHist();
@@ -108,9 +108,16 @@ int main(int argc, char *argv[])
         }
       printf("Tree in %s read out.\n",inp_filename);
 
-      sortLeaf = stree->GetLeaf(sort_path);
-      printf("Path to sort data set.\n");
-      printf("Number of tree entries: %Ld\n",stree->GetEntries());
+      if((sortLeaf = stree->GetLeaf(sort_path))==NULL)
+        if((sortBranch = stree->GetBranch(sort_path))==NULL)
+          {
+            printf("ERROR: Sort data path '%s' doesn't correspond to a branch or leaf in the tree!\n",sort_path);
+            exit(-1);
+          }
+      if(sortLeaf==NULL)
+        sortLeaf = (TLeaf*)sortBranch->GetListOfLeaves()->First(); //get the first leaf from the specified branch       
+      printf("Paths to sort data set.\n");
+      printf("Number of tree entries: %Ld\n",stree->GetEntries()); 
       
       addTreeDataToOutHist();
     }
