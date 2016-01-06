@@ -1,6 +1,6 @@
 #include "mca.h"
 
-int inpHist[NSPECT][S32K];
+int inpHist[S32K][S32K];
   
 int main(int argc, char *argv[])
 {
@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
       exit(-1);
     }
   //get the number of spectra in the .mca file
-  num_spect=NSPECT;
+  num_spect=S32K;
   for (int i=0;i<num_spect;i++)
     if(fread(inpHist[i],S32K*sizeof(int),1,input)!=1)
       {
@@ -33,6 +33,8 @@ int main(int argc, char *argv[])
   fclose(input);
   if(num_spect<=0)
     printf("File %s contains no spectra or isn't an .mca file.\n",argv[1]);
+  else if(num_spect>NSPECT)
+    printf("File %s contains %i spectra.  This value is higher than NSPECT defined in mca.h.\nIn order for the file to be properly read by other codes, change NSPECT in mca.h to a value of %i or higher, and recompile.\n",argv[1],num_spect,num_spect);
   else
     printf("File %s contains %i spectra.\n",argv[1],num_spect);
 

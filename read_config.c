@@ -6,7 +6,8 @@ char str1[256],str2[256];
 
 //tree2mca parameters
 char sort_path[256],gate_path[256],inp_filename[256],tree_name[256],out_filename[256],file_handler[256];
-double scaling=1.0;
+double scaling=1.0;//data scaling factor
+double shift=0.0;//data shift in bins
 bool listMode=false; //whether to sort tree files from a list 
 bool fwhmResponse=false; //whether to do energy convolution
 double fwhmF,fwhmG,fwhmH; //energy convolution parameters
@@ -50,6 +51,8 @@ void readConfigFile(const char * fileName,const char *configType)
         strcpy(tree_name,str2);
       if(strcmp(str1,"SORT_DATA_SCALING_FACTOR")==0)
         scaling=atof(str2);
+      if(strcmp(str1,"SORT_DATA_SHIFT")==0)
+        shift=atof(str2);
       if(strcmp(str1,"SORT_DATA_FWHM_RESPONSE")==0)
         {
           if(strcmp(str2,"yes")==0)
@@ -111,6 +114,8 @@ void readConfigFile(const char * fileName,const char *configType)
         }
       if(scaling!=1.0)
         printf("Will scale sorted data by a factor of %f\n",scaling);
+      if(shift!=0.0)
+        printf("Will shift sorted data by %0.2f bins.\n",shift);
       if(output_specified==true)
         printf("Will save output data to file: %s\n",out_filename);
       if(output_specified==false)
@@ -132,6 +137,8 @@ void readConfigFile(const char * fileName,const char *configType)
         }
       if(scaling!=1.0)
         printf("Will scale sorted data by a factor of %f\n",scaling);
+      if(shift!=0.0)
+        printf("Will shift sorted data by %0.2f bins.\n",shift);
       if(output_specified==true)
         printf("Will save output data to file: %s\n",out_filename);
       if(output_specified==false)
@@ -145,9 +152,9 @@ void readConfigFile(const char * fileName,const char *configType)
       else
         printf("Assuming regular file formatting (two columns).\n");
       if(scaling!=1.0)
-        printf("Will scale bins by a factor of %f\n",scaling);
+        printf("Will scale bins (rebin) by a factor of %f\n",scaling);
       if(val_scaling!=1.0)
-        printf("Will scale bins by a factor of %f\n",val_scaling);
+        printf("Will scale bin values by a factor of %f\n",val_scaling);
       printf("Will save output data to .mca file: %s\n",out_filename);
     }
   if(strcmp(configType,"txt2binnedavgtxt")==0)

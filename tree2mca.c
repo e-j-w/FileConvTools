@@ -147,8 +147,8 @@ void addTreeDataToOutHist()
     {
       stree->GetEntry(i);
       sort_value = sortLeaf->GetValue(0);
-      if(((sort_value*scaling)<S32K)&&((sort_value*scaling)>=0.0))
-        outHist[0][(int)(sort_value*scaling)]++; //fill the output histogram
+      if(((sort_value*scaling + shift)<S32K)&&((sort_value*scaling + shift)>=0.0))
+        outHist[0][(int)(sort_value*scaling + shift)]++; //fill the output histogram
     }
 
 }

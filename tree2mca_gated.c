@@ -189,15 +189,15 @@ void addTreeDataToOutHist()
       if(fwhmResponse==false)
         for (int j=0;j<NSPECT;j++)
           if(gate_value==j)
-            if((sort_value*scaling)>=0.0)
-              if((sort_value*scaling)<S32K)
-                outHist[j][(int)(sort_value*scaling)]++; //fill the output histogram
+            if((sort_value*scaling + shift)>=0.0)
+              if((sort_value*scaling + shift)<S32K)
+                outHist[j][(int)(sort_value*scaling + shift)]++; //fill the output histogram
       if(fwhmResponse==true)
         for (int j=0;j<NSPECT;j++)
           if(gate_value==j)
-            if((sort_value*scaling)>=0.0)
-              if((sort_value*scaling)<S32K)
-                outHist[j][(int)(FWHM_response(sort_value*scaling))]++; //fill the output histogram
+            if((sort_value*scaling + shift)>=0.0)
+              if((sort_value*scaling + shift)<S32K)
+                outHist[j][(int)(FWHM_response(sort_value*scaling + shift))]++; //fill the output histogram
     }
 
 }
