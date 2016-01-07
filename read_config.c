@@ -5,7 +5,7 @@ FILE *config;
 char str1[256],str2[256];
 
 //tree2mca parameters
-char sort_path[256],gate_path[256],inp_filename[256],tree_name[256],out_filename[256],file_handler[256];
+char sort_path[256],gate_path[256],inp_filename[256],sort_tree_name[256],gate_tree_name[256],out_filename[256],file_handler[256];
 double scaling=1.0;//data scaling factor
 double shift=0.0;//data shift in bins
 bool listMode=false; //whether to sort tree files from a list 
@@ -47,8 +47,15 @@ void readConfigFile(const char * fileName,const char *configType)
           listMode=true;
           strcpy(inp_filename,str2);
         }
-      if(strcmp(str1,"TREE_NAME")==0)
-        strcpy(tree_name,str2);
+      if(strcmp(str1,"TREE_NAME")==0) //use this to put the game tree for sort and gate
+        {
+          strcpy(sort_tree_name,str2);
+          strcpy(gate_tree_name,str2);
+        }
+      if(strcmp(str1,"SORT_TREE_NAME")==0)
+        strcpy(sort_tree_name,str2);
+      if(strcmp(str1,"GATE_TREE_NAME")==0)
+        strcpy(gate_tree_name,str2);
       if(strcmp(str1,"SORT_DATA_SCALING_FACTOR")==0)
         scaling=atof(str2);
       if(strcmp(str1,"SORT_DATA_SHIFT")==0)
@@ -105,8 +112,7 @@ void readConfigFile(const char * fileName,const char *configType)
         printf("Input tree file: %s\n",inp_filename);
       if(listMode==true)
         printf("Input list file: %s\n",inp_filename);
-      printf("Name of tree in the file(s) to be used: %s\n",tree_name);
-      printf("Sorting from leaf with path: %s\n",sort_path);
+      printf("Sorting from leaf with path: %s in tree: %s\n",sort_path,sort_tree_name);
       if(fwhmResponse==true)
         {
           printf("Will apply FWHM response function to sorted data.\n");
@@ -127,9 +133,8 @@ void readConfigFile(const char * fileName,const char *configType)
         printf("Input tree file: %s\n",inp_filename);
       if(listMode==true)
         printf("Input list file: %s\n",inp_filename);
-      printf("Name of tree in the file(s) to be used: %s\n",tree_name);
-      printf("Sorting from leaf with path: %s\n",sort_path);
-      printf("Taking gate data from leaf with path: %s\n",gate_path);
+      printf("Sorting from leaf with path: %s in tree: %s\n",sort_path,sort_tree_name);
+      printf("Taking gate data from leaf with path: %s in tree: %s\n",gate_path,gate_tree_name);
       if(fwhmResponse==true)
         {
           printf("Will apply FWHM response function to sorted data.\n");

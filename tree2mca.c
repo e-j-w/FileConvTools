@@ -46,12 +46,12 @@ int main(int argc, char *argv[])
         {
   
           inp = new TFile(str,"read");
-          if((stree = (TTree*)inp->Get(tree_name))==NULL)
+          if((stree = (TTree*)inp->Get(sort_tree_name))==NULL)
             {
-              printf("The specified tree named %s doesn't exist, trying default name 'tree'.\n",tree_name);
+              printf("The specified tree named %s doesn't exist, trying default name 'tree'.\n",sort_tree_name);
               if((stree = (TTree*)inp->Get("tree"))==NULL)//try the default tree name
                 {
-                  printf("ERROR: The specified tree named %s (within the ROOT file) cannot be opened!\n",tree_name);
+                  printf("ERROR: The specified tree named %s (within the ROOT file) cannot be opened!\n",sort_tree_name);
                   exit(-1);
                 }
             }
@@ -97,12 +97,12 @@ int main(int argc, char *argv[])
     {
       //read in tree file
       inp = new TFile(inp_filename,"read");
-      if((stree = (TTree*)inp->Get(tree_name))==NULL)
+      if((stree = (TTree*)inp->Get(sort_tree_name))==NULL)
         {
-          printf("The specified tree named %s doesn't exist, trying default name 'tree'.\n",tree_name);
+          printf("The specified tree named %s doesn't exist, trying default name 'tree'.\n",sort_tree_name);
           if((stree = (TTree*)inp->Get("tree"))==NULL)//try the default tree name
             {
-               printf("ERROR: The specified tree named %s (within the ROOT file) cannot be opened!\n",tree_name);
+               printf("ERROR: The specified tree named %s (within the ROOT file) cannot be opened!\n",sort_tree_name);
                exit(-1);
             }
         }

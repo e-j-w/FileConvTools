@@ -19,7 +19,7 @@ void addTreeDataToOutHist();
 double FWHM_response(double);
 
 int outHist[NSPECT][S32K];
-TTree *stree;
+TTree *stree,*gtree;
 TLeaf *sortLeaf, *gateLeaf;
 TBranch *sortBranch, *gateBranch;
 TApplication *theApp;

@@ -51,16 +51,25 @@ int main(int argc, char *argv[])
         {
   
           inp = new TFile(str,"read");
-          if((stree = (TTree*)inp->Get(tree_name))==NULL)
+          if((stree = (TTree*)inp->Get(sort_tree_name))==NULL)
             {
-              printf("The specified tree named %s doesn't exist, trying default name 'tree'.\n",tree_name);
+              printf("The specified tree named %s doesn't exist, trying default name 'tree'.\n",sort_tree_name);
               if((stree = (TTree*)inp->Get("tree"))==NULL)//try the default tree name
                 {
-                  printf("ERROR: The specified tree named %s (within the ROOT file) cannot be opened!\n",tree_name);
+                  printf("ERROR: The specified tree named %s (within the ROOT file) cannot be opened!\n",sort_tree_name);
                   exit(-1);
                 }
             }
-          printf("Tree in %s read out.\n",str);
+          if((gtree = (TTree*)inp->Get(gate_tree_name))==NULL)
+            {
+              printf("The specified tree named %s doesn't exist, trying default name 'tree'.\n",gate_tree_name);
+              if((stree = (TTree*)inp->Get("tree"))==NULL)//try the default tree name
+                {
+                  printf("ERROR: The specified tree named %s (within the ROOT file) cannot be opened!\n",gate_tree_name);
+                  exit(-1);
+                }
+            }
+          printf("Tree(s) in %s read out.\n",str);
           
           if((sortLeaf = stree->GetLeaf(sort_path))==NULL)
             if((sortBranch = stree->GetBranch(sort_path))==NULL)
@@ -68,8 +77,8 @@ int main(int argc, char *argv[])
                 printf("ERROR: Sort data path '%s' doesn't correspond to a branch or leaf in the tree!\n",sort_path);
                 exit(-1);
               }
-          if((gateLeaf = stree->GetLeaf(gate_path))==NULL)
-            if((gateBranch = stree->GetBranch(gate_path))==NULL)
+          if((gateLeaf = gtree->GetLeaf(gate_path))==NULL)
+            if((gateBranch = gtree->GetBranch(gate_path))==NULL)
               {
                 printf("ERROR: Gate data path '%s' doesn't correspond to a branch or leaf in the tree!\n",gate_path);
                 exit(-1);
@@ -79,7 +88,6 @@ int main(int argc, char *argv[])
           if(gateLeaf==NULL)
             gateLeaf = (TLeaf*)gateBranch->GetListOfLeaves()->First(); //get the first leaf from the specified branch
           printf("Paths to sort and gate data set.\n");
-          printf("Number of tree entries: %Ld\n",stree->GetEntries());
 
           addTreeDataToOutHist();
           
@@ -110,16 +118,25 @@ int main(int argc, char *argv[])
     {
       //read in tree file
       inp = new TFile(inp_filename,"read");
-      if((stree = (TTree*)inp->Get(tree_name))==NULL)
+      if((stree = (TTree*)inp->Get(sort_tree_name))==NULL)
         {
-          printf("The specified tree named %s doesn't exist, trying default name 'tree'.\n",tree_name);
+          printf("The specified tree named %s doesn't exist, trying default name 'tree'.\n",sort_tree_name);
           if((stree = (TTree*)inp->Get("tree"))==NULL)//try the default tree name
             {
-               printf("ERROR: The specified tree named %s (within the ROOT file) cannot be opened!\n",tree_name);
+               printf("ERROR: The specified tree named %s (within the ROOT file) cannot be opened!\n",sort_tree_name);
                exit(-1);
             }
         }
-      printf("Tree in %s read out.\n",inp_filename);
+      if((gtree = (TTree*)inp->Get(gate_tree_name))==NULL)
+        {
+          printf("The specified tree named %s doesn't exist, trying default name 'tree'.\n",gate_tree_name);
+          if((stree = (TTree*)inp->Get("tree"))==NULL)//try the default tree name
+            {
+              printf("ERROR: The specified tree named %s (within the ROOT file) cannot be opened!\n",gate_tree_name);
+              exit(-1);
+            }
+        }
+      printf("Tree(s) in %s read out.\n",inp_filename);
 
       if((sortLeaf = stree->GetLeaf(sort_path))==NULL)
         if((sortBranch = stree->GetBranch(sort_path))==NULL)
@@ -127,8 +144,8 @@ int main(int argc, char *argv[])
             printf("ERROR: Sort data path '%s' doesn't correspond to a branch or leaf in the tree!\n",sort_path);
             exit(-1);
           }
-      if((gateLeaf = stree->GetLeaf(gate_path))==NULL)
-        if((gateBranch = stree->GetBranch(gate_path))==NULL)
+      if((gateLeaf = gtree->GetLeaf(gate_path))==NULL)
+        if((gateBranch = gtree->GetBranch(gate_path))==NULL)
           {
             printf("ERROR: Gate data path '%s' doesn't correspond to a branch or leaf in the tree!\n",gate_path);
             exit(-1);
@@ -138,7 +155,6 @@ int main(int argc, char *argv[])
       if(gateLeaf==NULL)
         gateLeaf = (TLeaf*)gateBranch->GetListOfLeaves()->First(); //get the first leaf from the specified branch
       printf("Paths to sort and gate data set.\n");
-      printf("Number of tree entries: %Ld\n",stree->GetEntries());
       
       addTreeDataToOutHist();
     }
@@ -178,10 +194,17 @@ void addTreeDataToOutHist()
 {
   Double_t sort_value;
   Int_t gate_value;
+  long long int entries;
+  
+  entries=stree->GetEntries();
+  if(gtree->GetEntries()<entries)
+    entries=gtree->GetEntries();
+  printf("Number of entries in tree(s): %Ld\n",entries);
 
-  for (int i=0;i<stree->GetEntries();i++)
+  for (int i=0;i<entries;i++)
     {
       stree->GetEntry(i);
+      gtree->GetEntry(i);
       
       sort_value = sortLeaf->GetValue(0);
       gate_value = gateLeaf->GetValue(0);
