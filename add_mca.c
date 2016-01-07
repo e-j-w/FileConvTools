@@ -15,9 +15,9 @@ int main(int argc, char *argv[])
   if((argc!=4)&&(argc!=3))
     {
       printf("\nadd_mca input_1 input_2 output\n");
-      printf("Adds the two input .mca files together spectrum by spectrum and outputs a combined .mca file.\n");
+      printf("------------------------------\nAdds the two input .mca files together spectrum by spectrum and outputs a combined .mca file.\n");
       printf("\nadd_mca input_list output\n");
-      printf("Adds the all of the .mca files apecified in the list file together spectrum by spectrum and outputs a combined .mca file.\n");
+      printf("-------------------------\nAdds the all of the .mca files apecified in the list file together spectrum by spectrum and outputs a combined .mca file.\n");
       printf("The list file should contain the relative file paths to the individual .mca files seperated by line.\n\n");
       exit(-1);
     }

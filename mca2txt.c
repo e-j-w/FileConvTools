@@ -15,9 +15,9 @@ int main(int argc, char *argv[])
   if((argc!=4)&&(argc!=3))
     {
       printf("\nmca2txt input_mca spectrum output_filename\n");
-      printf("Converts the specified spectrum in the input .mca file to a tab delimited text file.\n");
+      printf("------------------------------------------\nConverts the specified spectrum in the input .mca file to a tab delimited text file.\n");
       printf("\nmca2txt input_mca number_of_spectra\n");
-      printf("Converts the input .mca file to a series of tab delimited text files, each containing data from a spectrum in the .mca file.  The text files are named after the original .mca file and the spectrum number.\n\n");
+      printf("-----------------------------------\nConverts the input .mca file to a series of tab delimited text files, each containing data from a spectrum in the .mca file.  The text files are named after the original .mca file and the spectrum number.\n\n");
       exit(-1);
     }
 

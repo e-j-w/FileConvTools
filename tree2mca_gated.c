@@ -22,10 +22,7 @@ int main(int argc, char *argv[])
   if(argc!=2)
     {
       printf("\ntree2mca_gated parameter_file\n");
-      printf("\nTakes the data in the specified branch and leaf of the specified ROOT tree(s) and sorts it to .mca file(s) with spectra gated on the data in the specified gate branch and leaf.  The parameter INPUT_TREE is used to specify a single ROOT file, whereas the parameter INPUT_TREE_LIST is used to specify a list of ROOT files to sort.\n");
-      printf("Eg. the sort data could refer to gamma ray energy, while the gate data could refer to detector number.  Output is then an .mca file containing gamma-ray spectra, where the spectrum number corresponds to the detector number.  The gate data should contain integer values.\n");
-      printf("\nSORT_DATA_SCALING_FACTOR specifies a scaling factor for the sort data, which can be used to get different binning in the output spectra.\n");
-      printf("\nThe OUTPUT_FILE parameter is optional - if used, all data will be sorted into a single .mca file with the filename specified by output_file.  Otherwise, individual .mca files for each root tree will be generated with matching filenames.\n\n");
+      printf("-----------------------------\nTakes the data in the specified branch and leaf of the specified ROOT tree(s) and sorts it to .mca file(s) with spectra gated on the data in the specified gate branch and leaf.\n\n");
       exit(-1);
     }
 

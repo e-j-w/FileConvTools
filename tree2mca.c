@@ -21,8 +21,8 @@ int main(int argc, char *argv[])
 
   if(argc!=2)
     {
-      printf("tree2mca parameter_file\n");
-      printf("\nTakes the specified branch/leaf of the specified ROOT tree file(s) and converts to a single spectrum .mca file.\n");
+      printf("\ntree2mca parameter_file\n");
+      printf("-----------------------\nTakes the specified branch/leaf of the specified ROOT tree file(s) and converts to a single spectrum .mca file.\n\n");
       exit(-1);
     }
     

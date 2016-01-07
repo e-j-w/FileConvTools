@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
   if(argc!=2)
     {
       printf("\nanalyze_mca input_file\n");
-      printf("Prints useful (?) information about the input .mca file.\n\n");
+      printf("----------------------\nPrints useful (?) information about the input .mca file.\n\n");
       exit(-1);
     }
 

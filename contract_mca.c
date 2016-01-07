@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
   if(argc!=4)
     {
       printf("\ncontract_mca input_file contraction_factor output_file\n");
-      printf("Contracts the input .mca file by the specified contraction factor.\n\n");
+      printf("------------------------------------------------------\nContracts the input .mca file by the specified contraction factor.\n\n");
       exit(-1);
     }
 
