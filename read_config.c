@@ -2,12 +2,14 @@
 
 //file I/O
 FILE *config;
-char str1[256],str2[256];
+char cfgstr[256],str1[256],str2[256];
 
 //tree2mca parameters
 char sort_path[256],gate_path[256],inp_filename[256],sort_tree_name[256],gate_tree_name[256],out_filename[256],file_handler[256];
-double scaling=1.0;//data scaling factor
-double shift=0.0;//data shift in bins
+double sort_scaling=1.0;//data scaling factor
+double sort_shift=0.0;//data shift in bins
+double gate_scaling=1.0;//gate scaling factor
+double gate_shift=0.0;//gate shift in bins
 bool listMode=false; //whether to sort tree files from a list 
 bool fwhmResponse=false; //whether to do energy convolution
 double fwhmF,fwhmG,fwhmH; //energy convolution parameters
@@ -30,77 +32,90 @@ void readConfigFile(const char * fileName,const char *configType)
       printf("ERROR: Cannot open the parameter file %s!\n",fileName);
       exit(-1);
     }
-  while(fscanf(config,"%s %s",str1,str2)!=EOF)
+  
+  while(!(feof(config)))//go until the end of file is reached
     {
-      //printf("%s %s.\n",str1,str2);
-      if(strcmp(str1,"SORT_PATH")==0)
-        strcpy(sort_path,str2);
-      if(strcmp(str1,"GATE_PATH")==0)
-        strcpy(gate_path,str2);
-      if((strcmp(str1,"INPUT_TREE")==0)||(strcmp(str1,"INPUT_FILE")==0))
+      if(fgets(cfgstr,256,config)!=NULL)
         {
-          listMode=false;
-          strcpy(inp_filename,str2);
-        }
-      if(strcmp(str1,"INPUT_TREE_LIST")==0)
-        {
-          listMode=true;
-          strcpy(inp_filename,str2);
-        }
-      if(strcmp(str1,"TREE_NAME")==0) //use this to put the game tree for sort and gate
-        {
-          strcpy(sort_tree_name,str2);
-          strcpy(gate_tree_name,str2);
-        }
-      if(strcmp(str1,"SORT_TREE_NAME")==0)
-        strcpy(sort_tree_name,str2);
-      if(strcmp(str1,"GATE_TREE_NAME")==0)
-        strcpy(gate_tree_name,str2);
-      if(strcmp(str1,"SORT_DATA_SCALING_FACTOR")==0)
-        scaling=atof(str2);
-      if(strcmp(str1,"SORT_DATA_SHIFT")==0)
-        shift=atof(str2);
-      if(strcmp(str1,"SORT_DATA_FWHM_RESPONSE")==0)
-        {
-          if(strcmp(str2,"yes")==0)
-            fwhmResponse=true;
-          else
-            fwhmResponse=false;
-        }
-      if(strcmp(str1,"FWHM_F")==0)
-        fwhmF=atof(str2);
-      if(strcmp(str1,"FWHM_G")==0)
-        fwhmG=atof(str2);
-      if(strcmp(str1,"FWHM_H")==0)
-        fwhmH=atof(str2);
-      if(strcmp(str1,"OUTPUT_FILE")==0)
-        {
-          output_specified=true;
-          strcpy(out_filename,str2);
-        }
-      if(strcmp(str1,"BIN_SCALING_FACTOR")==0)
-        scaling=atof(str2);
-      if(strcmp(str1,"VALUE_SCALING_FACTOR")==0)
-        val_scaling=atof(str2);
-      if(strcmp(str1,"FILE_TYPE_HANDLER")==0)
-        {
-          file_handler_specified=true;
-          strcpy(file_handler,str2);
-        }
-      if(strcmp(str1,"BIN_SIZE")==0)
-        binSize=atof(str2);
-      if(strcmp(str1,"X_BRANCH")==0)
-        strcpy(x_branch,str2);
-      if(strcmp(str1,"Y_BRANCH")==0)
-        strcpy(y_branch,str2);
-      if(strcmp(str1,"X_LEAF")==0)
-        x_leaf=atoi(str2);
-      if(strcmp(str1,"Y_LEAF")==0)
-        y_leaf=atoi(str2);
-      if(strcmp(str1,"MAX_X_VALUE")==0)
-        {
-          use_max_x=true;
-          max_x=atof(str2);
+          if(sscanf(cfgstr,"%s %s",str1,str2)==2) //single parameter data
+            {
+              if(strcmp(str1,"SORT_PATH")==0)
+                strcpy(sort_path,str2);
+              if(strcmp(str1,"GATE_PATH")==0)
+                strcpy(gate_path,str2);
+              if(strcmp(str1,"INPUT_FILE")==0)
+                {
+                  listMode=false;
+                  strcpy(inp_filename,str2);
+                }
+              if(strcmp(str1,"INPUT_FILE_LIST")==0)
+                {
+                  listMode=true;
+                  strcpy(inp_filename,str2);
+                }
+              if(strcmp(str1,"TREE_NAME")==0) //use this to put the game tree for sort and gate
+                {
+                  strcpy(sort_tree_name,str2);
+                  strcpy(gate_tree_name,str2);
+                }
+              if(strcmp(str1,"SORT_TREE_NAME")==0)
+                strcpy(sort_tree_name,str2);
+              if(strcmp(str1,"GATE_TREE_NAME")==0)
+                strcpy(gate_tree_name,str2);
+              if(strcmp(str1,"SORT_DATA_SCALING_FACTOR")==0)
+                sort_scaling=atof(str2);
+              if(strcmp(str1,"SORT_DATA_SHIFT")==0)
+                sort_shift=atof(str2);
+              if(strcmp(str1,"GATE_DATA_SCALING_FACTOR")==0)
+                gate_scaling=atof(str2);
+              if(strcmp(str1,"GATE_DATA_SHIFT")==0)
+                gate_shift=atof(str2);
+              if(strcmp(str1,"SORT_DATA_FWHM_RESPONSE")==0)
+                {
+                  if(strcmp(str2,"yes")==0)
+                    fwhmResponse=true;
+                  else
+                    fwhmResponse=false;
+                }
+              if(strcmp(str1,"FWHM_F")==0)
+                fwhmF=atof(str2);
+              if(strcmp(str1,"FWHM_G")==0)
+                fwhmG=atof(str2);
+              if(strcmp(str1,"FWHM_H")==0)
+                fwhmH=atof(str2);
+              if(strcmp(str1,"OUTPUT_FILE")==0)
+                {
+                  output_specified=true;
+                  strcpy(out_filename,str2);
+                }
+              if(strcmp(str1,"BIN_SCALING_FACTOR")==0)
+                sort_scaling=atof(str2);
+              if(strcmp(str1,"VALUE_SCALING_FACTOR")==0)
+                val_scaling=atof(str2);
+              if(strcmp(str1,"FILE_TYPE_HANDLER")==0)
+                {
+                  file_handler_specified=true;
+                  strcpy(file_handler,str2);
+                }
+              if(strcmp(str1,"BIN_SIZE")==0)
+                binSize=atof(str2);
+              if(strcmp(str1,"X_BRANCH")==0)
+                strcpy(x_branch,str2);
+              if(strcmp(str1,"Y_BRANCH")==0)
+                strcpy(y_branch,str2);
+              if(strcmp(str1,"X_LEAF")==0)
+                x_leaf=atoi(str2);
+              if(strcmp(str1,"Y_LEAF")==0)
+                y_leaf=atoi(str2);
+              if(strcmp(str1,"MAX_X_VALUE")==0)
+                {
+                  use_max_x=true;
+                  max_x=atof(str2);
+                }
+            }
+          if(sscanf(cfgstr,"%s %s",str1,str2)==1) //only one item on line
+              if(strcmp(str1,"<---END_OF_PARAMETERS--->")==0)
+                break;  
         }
     }
   fclose(config);
@@ -118,10 +133,10 @@ void readConfigFile(const char * fileName,const char *configType)
           printf("Will apply FWHM response function to sorted data.\n");
           printf("FWHM response function paremeters: F=%f, G=%f, H=%f.\n",fwhmF,fwhmG,fwhmH);
         }
-      if(scaling!=1.0)
-        printf("Will scale sorted data by a factor of %f\n",scaling);
-      if(shift!=0.0)
-        printf("Will shift sorted data by %0.2f bins.\n",shift);
+      if(sort_scaling!=1.0)
+        printf("Will scale sorted data by a factor of %f\n",sort_scaling);
+      if(sort_shift!=0.0)
+        printf("Will shift sorted data by %0.2f bins.\n",sort_shift);
       if(output_specified==true)
         printf("Will save output data to file: %s\n",out_filename);
       if(output_specified==false)
@@ -140,10 +155,14 @@ void readConfigFile(const char * fileName,const char *configType)
           printf("Will apply FWHM response function to sorted data.\n");
           printf("FWHM response function paremeters: F=%f, G=%f, H=%f.\n",fwhmF,fwhmG,fwhmH);
         }
-      if(scaling!=1.0)
-        printf("Will scale sorted data by a factor of %f\n",scaling);
-      if(shift!=0.0)
-        printf("Will shift sorted data by %0.2f bins.\n",shift);
+      if(sort_scaling!=1.0)
+        printf("Will scale sorted data by a factor of %f\n",sort_scaling);
+      if(sort_shift!=0.0)
+        printf("Will shift sorted data by %0.2f bins.\n",sort_shift);
+      if(gate_scaling!=1.0)
+        printf("Will scale gate data by a factor of %f\n",gate_scaling);
+      if(gate_shift!=0.0)
+        printf("Will shift gate data by %0.2f bins.\n",gate_shift);
       if(output_specified==true)
         printf("Will save output data to file: %s\n",out_filename);
       if(output_specified==false)
@@ -156,8 +175,8 @@ void readConfigFile(const char * fileName,const char *configType)
         printf("Assuming input file format: %s\n",file_handler);
       else
         printf("Assuming regular file formatting (two columns).\n");
-      if(scaling!=1.0)
-        printf("Will scale bins (rebin) by a factor of %f\n",scaling);
+      if(sort_scaling!=1.0)
+        printf("Will scale bins (rebin) by a factor of %f\n",sort_scaling);
       if(val_scaling!=1.0)
         printf("Will scale bin values by a factor of %f\n",val_scaling);
       printf("Will save output data to .mca file: %s\n",out_filename);

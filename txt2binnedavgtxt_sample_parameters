@@ -4,9 +4,19 @@ MAX_X_VALUE                 100000
 FILE_TYPE_HANDLER           SRIM_EXYZ
 OUTPUT_FILE                 EXYZhist.txt
 
+<---END_OF_PARAMETERS--->
+
 This is a parameter file for the txt2binnedavgtxt code.
-Possible parameters can be inferred from the code in 
-read_config.c.  At some point I may write better 
-documentation for this.
 If you change the format of the file, prepare for unforseen
 consequences.
+
+Parameter list:
+
+INPUT_FILE - Path to a single plaintext file to take data from.
+
+BIN_SIZE - Size of the bins in the histogram in the output file.
+MAX_X_VALUE - Maximum x value to be parsed from the input file.  Values above this will be discarded.
+
+FILE_TYPE_HANDLER - Specifies the input file formatiing.  Available options: 'default' (two column text file containing x and y values), 'SRIM_EXYZ' (particle history files outputted by SRIM).
+
+OUTPUT_FILE - Name of the output plaintext file.

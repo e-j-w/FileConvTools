@@ -48,9 +48,9 @@ int main(int argc, char *argv[])
   for(int i=0;i<S32K;i++)
     outHist[0][i]=0;//initialize all elements to 0
   for(int i=0;i<S32K;i++)
-    if((ch[i]*scaling)>0.0)
-      if((ch[i]*scaling)<S32K)
-        outHist[0][(int)round(ch[i]*scaling)]+=(int)round(val[i]*val_scaling);
+    if((ch[i]*sort_scaling)>0.0)
+      if((ch[i]*sort_scaling)<S32K)
+        outHist[0][(int)round(ch[i]*sort_scaling)]+=(int)round(val[i]*val_scaling);
   
   //write the output histogram to disk
   if((output=fopen(out_filename,"w"))==NULL)
