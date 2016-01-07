@@ -14,7 +14,7 @@ Parameter list:
 
 INPUT_FILE - Path to a single plaintext file to take data from.
 
-BIN_SIZE - Size of the bins in the histogram in the output file.
+BIN_SIZE - Size (width) of the bins in the histogram in the output file.
 MAX_X_VALUE - Maximum x value to be parsed from the input file.  Values above this will be discarded.
 
 FILE_TYPE_HANDLER - Specifies the input file formatiing.  Available options: 'default' (two column text file containing x and y values), 'SRIM_EXYZ' (particle history files outputted by SRIM).

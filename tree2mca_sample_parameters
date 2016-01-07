@@ -1,4 +1,4 @@
-INPUT_TREE                  0p2a_30MeVSRIMcomp_run1.root
+INPUT_FILE                  0p2a_30MeVSRIMcomp_run1.root
 TREE_NAME                   tree
 SORT_PATH                   partCsIHit/E
 SORT_DATA_SCALING_FACTOR    100000

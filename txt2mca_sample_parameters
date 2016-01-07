@@ -4,9 +4,19 @@ VALUE_SCALING_FACTOR        1
 FILE_TYPE_HANDLER           SRIM_EXYZ     
 OUTPUT_FILE                 sample.mca
 
+<---END_OF_PARAMETERS--->
+
 This is a parameter file for the txt2mca code.
-Possible parameters can be inferred from the code in 
-read_config.c.  At some point I may write better 
-documentation for this.
 If you change the format of the file, prepare for unforseen
 consequences.
+
+Parameter list:
+
+INPUT_FILE - Path to a single plaintext file to take histogram data from.
+
+BIN_SCALING_FACTOR - Multiplicative factor to scale bins (re-bin) by before writing the output file.
+VALUE_SCALING_FACTOR - Multiplicative factor to scale bin values by before writing the output file.
+
+FILE_TYPE_HANDLER - Specifies the input file formatiing.  Available options: 'default' (two column text file containing x and y values), 'SRIM_EXYZ' (particle history files outputted by SRIM).
+
+OUTPUT_FILE - Name of the output .mca file.

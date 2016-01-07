@@ -1,4 +1,4 @@
-INPUT_TREE                  sample.root
+INPUT_FILE                  sample.root
 TREE_NAME                   depthtree
 X_BRANCH                    projStepData
 X_LEAF                      0
@@ -8,9 +8,25 @@ MAX_X_VALUE                 100000
 BIN_SIZE                    5000     
 OUTPUT_FILE                 samplehist.txt
 
-This is a parameter file for the tree2binnedavgtxt code.
-Possible parameters can be inferred from the code in 
-read_config.c.  At some point I may write better 
-documentation for this.
+<---END_OF_PARAMETERS--->
+
+This is a configuration file for the tree2binnedavgtxt codes.
 If you change the format of the file, prepare for unforseen
 consequences.
+
+Parameter list:
+
+INPUT_FILE - Path to a single ROOT file to take tree data from.
+
+TREE_NAME - Name of the tree inside the specified ROOT file(s) to sort data from.
+X_BRANCH - Name of the ROOT tree branch containing x data.
+X_LEAF - Index of the leaf (starting from 0) in the specified ROOT tree branch containing x data.
+Y_BRANCH - Name of the ROOT tree branch containing y data.
+Y_LEAF - Index of the leaf (starting from 0) in the specified ROOT tree branch containing y data.
+
+BIN_SIZE - Size (width) of the bins in the histogram in the output file.
+MAX_X_VALUE - Maximum x value to be parsed from the input file.  Values above this will be discarded.
+
+FILE_TYPE_HANDLER - Specifies the input file formatiing.  Available options: 'default' (two column text file containing x and y values), 'SRIM_EXYZ' (particle history files outputted by SRIM).
+
+OUTPUT_FILE - Name of the output plaintext file.
