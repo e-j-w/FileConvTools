@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     }
   fclose(output);
 
-  return(0); //great success
+  return 0; //great success
 }
 
 //read data from the file

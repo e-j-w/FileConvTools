@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
           if((gtree = (TTree*)inp->Get(gate_tree_name))==NULL)
             {
               printf("The specified tree named %s doesn't exist, trying default name 'tree'.\n",gate_tree_name);
-              if((stree = (TTree*)inp->Get("tree"))==NULL)//try the default tree name
+              if((gtree = (TTree*)inp->Get("tree"))==NULL)//try the default tree name
                 {
                   printf("ERROR: The specified tree named %s (within the ROOT file) cannot be opened!\n",gate_tree_name);
                   exit(-1);
@@ -181,7 +181,7 @@ int main(int argc, char *argv[])
       fclose(output);
     }  
     
-  return(0); //great success
+  return 0; //great success
 }
 
 //This function extracts data from the tree after 

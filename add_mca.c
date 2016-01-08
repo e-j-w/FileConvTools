@@ -168,5 +168,5 @@ int main(int argc, char *argv[])
   if(argc==4)
     printf("Wrote %i spectra to file %s\n",max_num_spect,argv[3]);
     
-  return(0); //great success
+  return 0; //great success
 }

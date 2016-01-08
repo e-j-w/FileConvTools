@@ -86,5 +86,5 @@ int main(int argc, char *argv[])
         }
     }
 
-  return(0); //great success
+  return 0; //great success
 }

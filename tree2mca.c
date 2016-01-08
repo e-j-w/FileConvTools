@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
   fwrite(outHist[0],S32K*sizeof(int),1,output);
   fclose(output);
 
-  return(0); //great success
+  return 0; //great success
 }
 
 //This function extracts data from the tree after 

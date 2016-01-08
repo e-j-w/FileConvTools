@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
     }
   fclose(output);
 
-  return(0); //great success
+  return 0; //great success
 }
 
 //function which gets data from the ROOT tree at the specified entry and
