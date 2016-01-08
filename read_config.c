@@ -1,11 +1,14 @@
 #include <string.h>
+#include "common.h"
 
 //file I/O
-FILE *config;
+FILE *config,*customFile;
 char cfgstr[256],str1[256],str2[256];
 
 //tree2mca parameters
 char sort_path[256],gate_path[256],inp_filename[256],sort_tree_name[256],gate_tree_name[256],out_filename[256],file_handler[256];
+double custom_gates[NSPECT+1];
+int num_custom_gates=0;
 double sort_scaling=1.0;//data scaling factor
 double sort_shift=0.0;//data shift in bins
 double gate_scaling=1.0;//gate scaling factor
@@ -15,6 +18,7 @@ bool fwhmResponse=false; //whether to do energy convolution
 double fwhmF,fwhmG,fwhmH; //energy convolution parameters
 bool output_specified=false;
 bool file_handler_specified=false;
+bool use_custom_gates=false;
 
 //binnedavgtxt parameters
 char x_branch[256],y_branch[256];
@@ -70,6 +74,27 @@ void readConfigFile(const char * fileName,const char *configType)
                 gate_scaling=atof(str2);
               if(strcmp(str1,"GATE_DATA_SHIFT")==0)
                 gate_shift=atof(str2);
+              if(strcmp(str1,"CUSTOM_GATE_FILE")==0)
+                {
+                  if((customFile=fopen(str2,"r"))==NULL)
+                    {
+                      printf("ERROR: Cannot open the custom gate file %s specified in the parameter file!\n",str2);
+                      exit(-1);
+                    }
+                  use_custom_gates=true;
+                  num_custom_gates=0;
+                  while(!(feof(customFile)))//go until the end of file is reached
+                    {
+                      if(num_custom_gates<(NSPECT+1))
+                        if(fgets(str2,256,customFile)!=NULL)
+                          {
+                            custom_gates[num_custom_gates]=atof(str2);
+                            num_custom_gates++;
+                          }
+                    }
+                  num_custom_gates--;
+                  fclose(customFile);
+                }
               if(strcmp(str1,"SORT_DATA_FWHM_RESPONSE")==0)
                 {
                   if(strcmp(str2,"yes")==0)
@@ -159,10 +184,19 @@ void readConfigFile(const char * fileName,const char *configType)
         printf("Will scale sorted data by a factor of %f\n",sort_scaling);
       if(sort_shift!=0.0)
         printf("Will shift sorted data by %0.2f bins.\n",sort_shift);
-      if(gate_scaling!=1.0)
-        printf("Will scale gate data by a factor of %f\n",gate_scaling);
-      if(gate_shift!=0.0)
-        printf("Will shift gate data by %0.2f bins.\n",gate_shift);
+      if(use_custom_gates==true)
+        {
+          printf("Using custom gates. %i gates total.\n",num_custom_gates);
+          printf("First gate corresponds to gate data with values ranging from %f to %f\n",custom_gates[0],custom_gates[1]);
+          printf("Last gate corresponds to gate data with values ranging from %f to %f\n",custom_gates[num_custom_gates-1],custom_gates[num_custom_gates]);
+        }
+      else
+        {
+          if(gate_scaling!=1.0)
+            printf("Will scale gate data by a factor of %f\n",gate_scaling);
+          if(gate_shift!=0.0)
+            printf("Will shift gate data by %0.2f bins.\n",gate_shift);
+        }
       if(output_specified==true)
         printf("Will save output data to file: %s\n",out_filename);
       if(output_specified==false)

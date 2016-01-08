@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
   if(num_spect<=0)
     printf("File %s contains no spectra or isn't an .mca file.\n",argv[1]);
   else if(num_spect>NSPECT)
-    printf("File %s contains %i spectra.  This value is higher than NSPECT defined in mca.h.\nIn order for the file to be properly read by other codes, change NSPECT in mca.h to a value of %i or higher, and recompile.\n",argv[1],num_spect,num_spect);
+    printf("File %s contains %i spectra.  This value is higher than NSPECT defined in common.h.\nIn order for the file to be properly read by other codes, change NSPECT in common.h to a value of %i or higher, and recompile.\n",argv[1],num_spect,num_spect);
   else
     printf("File %s contains %i spectra.\n",argv[1],num_spect);
 

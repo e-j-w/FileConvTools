@@ -207,16 +207,16 @@ void addTreeDataToOutHist()
 
       if(fwhmResponse==false)
         for (int j=0;j<NSPECT;j++)
-          if((int)(gate_value*gate_scaling + gate_shift)==j)
+          if( ((use_custom_gates==false)&&((int)(gate_value*gate_scaling + gate_shift)==j)) || ((use_custom_gates==true)&&(valueInRange(gate_value,custom_gates[j],custom_gates[j+1]))) )
             if((sort_value*sort_scaling + sort_shift)>=0.0)
               if((sort_value*sort_scaling + sort_shift)<S32K)
-                outHist[j][(int)(sort_value*sort_scaling + sort_shift)]++; //fill the output histogram
-      if(fwhmResponse==true)
-        for (int j=0;j<NSPECT;j++)
-          if((int)(gate_value*gate_scaling + gate_shift)==j)
-            if((sort_value*sort_scaling + sort_shift)>=0.0)
-              if((sort_value*sort_scaling + sort_shift)<S32K)
-                outHist[j][(int)(FWHM_response(sort_value*sort_scaling + sort_shift))]++; //fill the output histogram
+                {
+                  if(fwhmResponse==false)
+                    outHist[j][(int)(sort_value*sort_scaling + sort_shift)]++; //fill the output histogram
+                  else if(fwhmResponse==true)
+                    outHist[j][(int)(FWHM_response(sort_value*sort_scaling + sort_shift))]++; //fill the output histogram
+                }
+                
     }
 
 }
@@ -239,4 +239,35 @@ double FWHM_response(double ch_in)
     ch_out=ch_in;
 
   return ch_out;
+}
+
+//checks whether a value falls within the range of two bounds (lower bound inclusive)
+//the order of the bounds doesn't matter
+bool valueInRange(double value, double bound1, double bound2)
+{
+
+  if(bound1>bound2)
+    {
+      if((value>=bound2)&&(value<bound1))
+        return true;
+      else
+        return false;
+    }
+  else if(bound2>bound1)
+    {
+      if((value>=bound1)&&(value<bound2))
+        return true;
+      else
+        return false;
+    }
+  else if(bound1==bound2)
+    {
+      if(value==bound1)
+        return true;
+      else
+        return false;
+    }
+    
+  return false;
+
 }

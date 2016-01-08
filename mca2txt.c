@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
         printf("ERROR: Number of spectra requested is larger than the maximum of %i!\n",NSPECT);
       if(mult_out==false)
         printf("ERROR: Spectrum number requested is larger than the maximum of %i!\n",NSPECT-1);
-      printf("Either specify a lower number or increase the value of NSPECT in mca.h and recompile.\n");
+      printf("Either specify a lower number or increase the value of NSPECT in common.h and recompile.\n");
       exit(-1);
     }
     
