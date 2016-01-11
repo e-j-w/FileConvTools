@@ -8,9 +8,15 @@ tree2mca
 treelist2mca
 tree2mca_gated
 tree2binnedavgtxt
+chn2mca
+spe2mca
+spx2mca
 list
 *.mca
 *.spe
+*.spx
+*.chn
+*.Chn
 *.root
 *.txt
 *~

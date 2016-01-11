@@ -3,9 +3,11 @@ Jonathan Williams
 
 Codes for converting between and processing different file types commonly used in the lab.
 
-Use 'make' to compile.  Requires g++ compiler and ROOT to be installed (some codes that do not depend on ROOT may be compiled using 'make no_root').  gf3 (radwareS32K) is recommended for viewing .mca files, or the code mca2txt can be used to convert them to plaintext (for viewing in Excel, etc.).  
+Use 'make' to compile.  Requires g++ compiler and CERN ROOT to be installed (codes that do not depend on ROOT may be compiled using 'make no_root').  gf3 (radwareS32K) is recommended for viewing .mca files, or the code mca2txt can be used to convert them to plaintext (for viewing in Excel, etc.).
 To make codes which depend on ROOT, the environment variable ROOTSYS must point to the location of root.  This can be done by adding to your .bashrc:
 export ROOTSYS=/path/to/root
+To run the programs from anywhere, move the resulting executables to any directory under your $PATH environment variable.
+Tested and working on Ubuntu 14.04 and Scientific Linux/CentOS 6.
 
 Running any code with no parameters will show a list of required parameters and/or parameter files.
 Some codes require parameter files to run.  Sample parameter files are included containing examples and listings of valid parameters.
