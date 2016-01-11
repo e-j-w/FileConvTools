@@ -1,6 +1,8 @@
+#include <string.h>
 #include "mca.h"
 
 int inpHist[S32K][S32K];
+long long int counts[S32K];
   
 int main(int argc, char *argv[])
 {
@@ -31,12 +33,22 @@ int main(int argc, char *argv[])
         break;
       }
   fclose(input);
+  
+  //get number of counts in each spectrum
+  memset(counts,0,sizeof(counts));
+  for(int i=0;i<num_spect;i++)
+    for(int j=0;j<S32K;j++)
+      counts[i]+=inpHist[i][j];
+  
   if(num_spect<=0)
     printf("File %s contains no spectra or isn't an .mca file.\n",argv[1]);
   else if(num_spect>NSPECT)
     printf("File %s contains %i spectra.  This value is higher than NSPECT defined in common.h.\nIn order for the file to be properly read by other codes, change NSPECT in common.h to a value of %i or higher, and recompile.\n",argv[1],num_spect,num_spect);
   else
     printf("File %s contains %i spectra.\n",argv[1],num_spect);
+    
+  for(int i=0;i<num_spect;i++)
+    printf("Spectrum %i contains %Li counts.\n",i,counts[i]);
 
   return 0; //great success
 }
