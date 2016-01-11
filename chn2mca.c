@@ -11,20 +11,14 @@
 int main(int argc, char *argv[])
 {
   size_t elementsRead;
-  char           acq_time[8],   /* buffer for time, date */
-                    month[4];      /* buffer for month string */
-  short          f_type;        /* .CHN file type */
-  unsigned short chan_offset,   /* beginning channel number */
-                    count,         /* loop counter */
-                    mca_num,       /* MCA number */
-                    num_chans,     /* no. of data channels */
-                    segment;       /* segment number */
-  int            livetime,      /* 20ms tics of livetime */    
-                    realtime,      /* 20ms tics of realtime */
-                    chan_data;     /* stores channel data */
-  FILE           *input,*output;
+  char acq_time[8], month[4];
+  short f_type;
+  unsigned short chan_offset, count, mca_num, num_chans, segment;
+  int livetime, realtime, chan_data;
+  FILE *input,*output;
   int hist[S32K];
   memset(hist,0,sizeof(hist));
+  
   if (argc!=3 )
     {
       printf("\nchn2mca input_chn output_filename\n");
@@ -38,14 +32,12 @@ int main(int argc, char *argv[])
       exit(-1);
     }
 
-  elementsRead=fread( &f_type, sizeof(f_type), 1, input );
-  if ( f_type != CHN) /*changed from .CHN to CHN*/
+  elementsRead=fread(&f_type,sizeof(f_type),1,input);
+  if(f_type!=CHN)
     {
       printf("ERROR: Input file %s is not a valid .chn file!\n",argv[1]);
       exit(1);
     }
-    
-  printf("Here!\n");  
      
   //read in the .chn file header and do absolutely nothing with it
   elementsRead=0;

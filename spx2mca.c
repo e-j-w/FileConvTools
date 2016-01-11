@@ -1,5 +1,3 @@
-/************************************************************/
-/* Sample program compatible with Microsoft and Borland C   */
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,6 +6,7 @@
 #include "common.h"
 
 #define SPX_DIM    16384
+
 int main(int argc, char *argv[])
 {
 
