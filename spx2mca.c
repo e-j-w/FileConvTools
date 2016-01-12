@@ -11,8 +11,7 @@ int main(int argc, char *argv[])
 {
 
   FILE *input,*output;
-  int inpHist[SPX_DIM];
-  int outHist[S32K];
+  int inpHist[SPX_DIM],outHist[S32K];
   
   if (argc != 3 )
     {
@@ -29,7 +28,7 @@ int main(int argc, char *argv[])
       printf("ERROR: Cannot open the input file %s!\n",argv[1]);
       exit(-1);
     }
-  if(fread(inpHist,SPX_DIM,sizeof(int),input)<1)
+  if(fread(inpHist,SPX_DIM*4,1,input)!=1)
     {
       printf("ERROR: Error reading input file %s, improper format!\n",argv[1]);
       exit(-1);
