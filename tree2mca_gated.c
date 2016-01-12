@@ -205,17 +205,16 @@ void addTreeDataToOutHist()
       sort_value = sortLeaf->GetValue(0);
       gate_value = gateLeaf->GetValue(0);
 
-      if(fwhmResponse==false)
-        for (int j=0;j<NSPECT;j++)
-          if( ((use_custom_gates==false)&&((int)(gate_value*gate_scaling + gate_shift)==j)) || ((use_custom_gates==true)&&(valueInRange(gate_value,custom_gates[j],custom_gates[j+1]))) )
-            if((sort_value*sort_scaling + sort_shift)>=0.0)
-              if((sort_value*sort_scaling + sort_shift)<S32K)
-                {
-                  if(fwhmResponse==false)
-                    outHist[j][(int)(sort_value*sort_scaling + sort_shift)]++; //fill the output histogram
-                  else if(fwhmResponse==true)
-                    outHist[j][(int)(FWHM_response(sort_value*sort_scaling + sort_shift))]++; //fill the output histogram
-                }
+      for (int j=0;j<NSPECT;j++)
+        if( ((use_custom_gates==false)&&((int)(gate_value*gate_scaling + gate_shift)==j)) || ((use_custom_gates==true)&&(valueInRange(gate_value,custom_gates[j],custom_gates[j+1]))) )
+          if((sort_value*sort_scaling + sort_shift)>=0.0)
+            if((sort_value*sort_scaling + sort_shift)<S32K)
+              {
+                if(fwhmResponse==false)
+                  outHist[j][(int)(sort_value*sort_scaling + sort_shift)]++; //fill the output histogram
+                else if(fwhmResponse==true)
+                  outHist[j][(int)(FWHM_response(sort_value*sort_scaling + sort_shift))]++; //fill the output histogram
+              }
                 
     }
 

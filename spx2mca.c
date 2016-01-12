@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
 {
 
   FILE *input,*output;
-  long int inpHist[SPX_DIM];
+  int inpHist[SPX_DIM];
   int outHist[S32K];
   
   if (argc != 3 )
@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
       printf("ERROR: Cannot open the input file %s!\n",argv[1]);
       exit(-1);
     }
-  if(fread(inpHist,SPX_DIM, sizeof(long int), input)<1)
+  if(fread(inpHist,SPX_DIM,sizeof(int),input)<1)
     {
       printf("ERROR: Error reading input file %s, improper format!\n",argv[1]);
       exit(-1);
@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
      
   for(int ch=0;ch<SPX_DIM;ch++)
     {
-	    outHist[ch]=(int)inpHist[ch];
+	    outHist[ch]=inpHist[ch];
     }
     
   if((output = fopen(argv[2], "w"))==NULL)
