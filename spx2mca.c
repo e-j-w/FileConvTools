@@ -1,8 +1,4 @@
 #include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stddef.h>
-#include <stdint.h>
 #include "common.h"
 
 #define SPX_DIM    16384

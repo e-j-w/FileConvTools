@@ -6,5 +6,7 @@
 //forward declarations
 void readFileToArrays(const char *);
 
+int outHist[NSPECT][S32K];
+
 #endif
 

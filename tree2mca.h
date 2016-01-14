@@ -18,6 +18,8 @@ void addTreeDataToOutHist();
 double FWHM_response(double);
 bool valueInRange(double, double, double);
 
+int outHist[NSPECT][S32K];
+
 TTree *stree,*gtree;
 TLeaf *sortLeaf, *gateLeaf;
 TBranch *sortBranch, *gateBranch;
