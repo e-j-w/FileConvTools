@@ -1,6 +1,7 @@
 analyze_mca
 add_mca
 contract_mca
+sum_mca
 mca2txt
 txt2mca
 txt2binnedavgtxt

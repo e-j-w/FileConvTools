@@ -139,8 +139,8 @@ void readConfigFile(const char * fileName,const char *configType)
                 }
             }
           if(sscanf(cfgstr,"%s %s",str1,str2)==1) //only one item on line
-              if(strcmp(str1,"<---END_OF_PARAMETERS--->")==0)
-                break;  
+            if(strcmp(str1,"<---END_OF_PARAMETERS--->")==0)
+              break;  
         }
     }
   fclose(config);
