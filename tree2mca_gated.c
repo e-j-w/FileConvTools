@@ -230,6 +230,8 @@ double FWHM_response(double ch_in)
   ch=ch_in/1000.;
   // printf("ch: %f, ch_in: %f\n",ch,ch_in);
   fwhm=sqrt(fwhmF*fwhmF + fwhmG*fwhmG*ch + fwhmH*fwhmH*ch*ch);
+  if(randGen->Uniform()<fwhm2A)//determine whether we are using the first or second gaussian
+    fwhm=fwhm*fwhm2W;//modify the width of the gaussian
   sigma=fwhm/2.35482;
   //  printf("sigma: %f\n",sigma);
   if(sigma>0)

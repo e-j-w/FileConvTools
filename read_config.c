@@ -15,7 +15,7 @@ double gate_scaling=1.0;//gate scaling factor
 double gate_shift=0.0;//gate shift in bins
 bool listMode=false; //whether to sort tree files from a list 
 bool fwhmResponse=false; //whether to do energy convolution
-double fwhmF,fwhmG,fwhmH; //energy convolution parameters
+double fwhmF,fwhmG,fwhmH,fwhm2W,fwhm2A; //energy convolution parameters
 bool output_specified=false;
 bool file_handler_specified=false;
 bool use_custom_gates=false;
@@ -108,6 +108,10 @@ void readConfigFile(const char * fileName,const char *configType)
                 fwhmG=atof(str2);
               if(strcmp(str1,"FWHM_H")==0)
                 fwhmH=atof(str2);
+              if(strcmp(str1,"FWHM_2W")==0)
+                fwhm2W=atof(str2);
+              if(strcmp(str1,"FWHM_2A")==0)
+                fwhm2A=atof(str2);
               if(strcmp(str1,"OUTPUT_FILE")==0)
                 {
                   output_specified=true;
@@ -156,7 +160,9 @@ void readConfigFile(const char * fileName,const char *configType)
       if(fwhmResponse==true)
         {
           printf("Will apply FWHM response function to sorted data.\n");
-          printf("FWHM response function paremeters: F=%f, G=%f, H=%f.\n",fwhmF,fwhmG,fwhmH);
+          printf("FWHM response function parameters: F=%f, G=%f, H=%f.\n",fwhmF,fwhmG,fwhmH);
+          if(fwhm2A>0.0)
+            printf("A second Gaussian will be added, with relative area=%0.3f, relative width=%0.3f\n",fwhm2A,fwhm2W);
         }
       if(sort_scaling!=1.0)
         printf("Will scale sorted data by a factor of %f\n",sort_scaling);
@@ -179,6 +185,8 @@ void readConfigFile(const char * fileName,const char *configType)
         {
           printf("Will apply FWHM response function to sorted data.\n");
           printf("FWHM response function paremeters: F=%f, G=%f, H=%f.\n",fwhmF,fwhmG,fwhmH);
+          if(fwhm2A>0.0)
+            printf("A second Gaussian will be added, with relative area=%0.3f, relative width=%0.3f\n",fwhm2A,fwhm2W);
         }
       if(sort_scaling!=1.0)
         printf("Will scale sorted data by a factor of %f\n",sort_scaling);

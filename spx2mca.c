@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
      
   for(int ch=0;ch<SPX_DIM;ch++)
     {
-	    outHist[ch]=inpHist[ch];
+      outHist[ch]=inpHist[ch];
     }
     
   if((output = fopen(argv[2], "w"))==NULL)
