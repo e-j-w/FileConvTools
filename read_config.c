@@ -1,33 +1,6 @@
 #include <string.h>
 #include "common.h"
 
-//file I/O
-FILE *config,*customFile;
-char cfgstr[256],str1[256],str2[256];
-
-//tree2mca parameters
-char sort_path[256],gate_path[256],inp_filename[256],sort_tree_name[256],gate_tree_name[256],out_filename[256],file_handler[256];
-double custom_gates[NSPECT+1];
-int num_custom_gates=0;
-double sort_scaling=1.0;//data scaling factor
-double sort_shift=0.0;//data shift in bins
-double gate_scaling=1.0;//gate scaling factor
-double gate_shift=0.0;//gate shift in bins
-bool listMode=false; //whether to sort tree files from a list 
-bool fwhmResponse=false; //whether to do energy convolution
-double fwhmF,fwhmG,fwhmH,fwhm2W,fwhm2A; //energy convolution parameters
-bool output_specified=false;
-bool file_handler_specified=false;
-bool use_custom_gates=false;
-
-//binnedavgtxt parameters
-char x_branch[256],y_branch[256];
-int x_leaf, y_leaf;
-double val_scaling=1.0;
-double binSize=1.0;
-double max_x;
-bool use_max_x=false;
-
 void readConfigFile(const char * fileName,const char *configType) 
 {
 
@@ -112,6 +85,10 @@ void readConfigFile(const char * fileName,const char *configType)
                 fwhm2W=atof(str2);
               if(strcmp(str1,"FWHM_2A")==0)
                 fwhm2A=atof(str2);
+              if(strcmp(str1,"FWHM_TAU_HIGH")==0)
+                fwhmTauH=atof(str2);
+              if(strcmp(str1,"FWHM_TAU_LOW")==0)
+                fwhmTauL=atof(str2);
               if(strcmp(str1,"OUTPUT_FILE")==0)
                 {
                   output_specified=true;
@@ -160,9 +137,13 @@ void readConfigFile(const char * fileName,const char *configType)
       if(fwhmResponse==true)
         {
           printf("Will apply FWHM response function to sorted data.\n");
-          printf("FWHM response function parameters: F=%f, G=%f, H=%f.\n",fwhmF,fwhmG,fwhmH);
+          printf("FWHM response function paremeters: F=%f, G=%f, H=%f.\n",fwhmF,fwhmG,fwhmH);
           if(fwhm2A>0.0)
             printf("A second Gaussian will be added, with relative area=%0.3f, relative width=%0.3f\n",fwhm2A,fwhm2W);
+          if(fwhmTauH>0.0)
+            printf("A high energy exponential tail will be added, with tau=%0.3f channels.\n",fwhmTauH);
+          if(fwhmTauL>0.0)
+            printf("A low energy exponential tail will be added, with tau=%0.3f channels.\n",fwhmTauL);
         }
       if(sort_scaling!=1.0)
         printf("Will scale sorted data by a factor of %f\n",sort_scaling);
@@ -187,6 +168,10 @@ void readConfigFile(const char * fileName,const char *configType)
           printf("FWHM response function paremeters: F=%f, G=%f, H=%f.\n",fwhmF,fwhmG,fwhmH);
           if(fwhm2A>0.0)
             printf("A second Gaussian will be added, with relative area=%0.3f, relative width=%0.3f\n",fwhm2A,fwhm2W);
+          if(fwhmTauH>0.0)
+            printf("A high energy exponential tail will be added, with tau=%0.3f channels.\n",fwhmTauH);
+          if(fwhmTauL>0.0)
+            printf("A low energy exponential tail will be added, with tau=%0.3f channels.\n",fwhmTauL);
         }
       if(sort_scaling!=1.0)
         printf("Will scale sorted data by a factor of %f\n",sort_scaling);

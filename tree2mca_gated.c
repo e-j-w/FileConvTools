@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 
   FILE *list, *output;
   TFile *inp;
-  randGen = new TRandom();
+  randGen = new TRandom3();
 
   if(argc!=2)
     {
@@ -191,6 +191,7 @@ void addTreeDataToOutHist()
 {
   Double_t sort_value,gate_value;
   long long int entries;
+  double histVal;
   
   entries=stree->GetEntries();
   if(gtree->GetEntries()<entries)
@@ -207,15 +208,15 @@ void addTreeDataToOutHist()
 
       for (int j=0;j<NSPECT;j++)
         if( ((use_custom_gates==false)&&((int)(gate_value*gate_scaling + gate_shift)==j)) || ((use_custom_gates==true)&&(valueInRange(gate_value,custom_gates[j],custom_gates[j+1]))) )
-          if((sort_value*sort_scaling + sort_shift)>=0.0)
-            if((sort_value*sort_scaling + sort_shift)<S32K)
-              {
-                if(fwhmResponse==false)
-                  outHist[j][(int)(sort_value*sort_scaling + sort_shift)]++; //fill the output histogram
-                else if(fwhmResponse==true)
-                  outHist[j][(int)(FWHM_response(sort_value*sort_scaling + sort_shift))]++; //fill the output histogram
-              }
-                
+          {
+            if(fwhmResponse==false)
+              histVal=sort_value*sort_scaling + sort_shift;
+            else
+              histVal=FWHM_response(sort_value*sort_scaling + sort_shift);
+            if(histVal>=0.0)
+              if(histVal<S32K)
+                outHist[j][(int)(histVal)]++; //fill the output histogram
+          }        
     }
 
 }
@@ -238,6 +239,13 @@ double FWHM_response(double ch_in)
     ch_out=randGen->Gaus(ch_in,sigma);
   else
     ch_out=ch_in;
+  
+  //high energy tail
+  if(fwhmTauH>0);
+    ch_out+=randGen->Exp(fwhmTauH);
+  //low energy tail
+  if(fwhmTauL>0);
+    ch_out-=randGen->Exp(fwhmTauL);
 
   return ch_out;
 }

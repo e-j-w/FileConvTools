@@ -4,7 +4,8 @@
 #include "common.h"
 
 //ROOT stuff
-#include "TRandom.h"
+#include "TRandom3.h"
+#include "TMath.h"
 #include "TTree.h"
 #include "TLeaf.h"
 #include "TBranch.h"
@@ -24,7 +25,7 @@ TTree *stree,*gtree;
 TLeaf *sortLeaf, *gateLeaf;
 TBranch *sortBranch, *gateBranch;
 TApplication *theApp;
-TRandom *randGen;
+TRandom3 *randGen;
 
 #endif
 

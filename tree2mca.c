@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 
   FILE *list, *output;
   TFile *inp;
-  //randGen = new TRandom();
+  randGen = new TRandom3();
 
   if(argc!=2)
     {
@@ -142,13 +142,50 @@ int main(int argc, char *argv[])
 void addTreeDataToOutHist()
 {
   Double_t sort_value;
+  double histVal;
   
   for (int i=0;i<stree->GetEntries();i++)
     {
       stree->GetEntry(i);
       sort_value = sortLeaf->GetValue(0);
-      if(((sort_value*sort_scaling + sort_shift)<S32K)&&((sort_value*sort_scaling + sort_shift)>=0.0))
-        outHist[0][(int)(sort_value*sort_scaling + sort_shift)]++; //fill the output histogram
+      
+      if(fwhmResponse==false)
+        histVal=sort_value*sort_scaling + sort_shift;
+      else
+        histVal=FWHM_response(sort_value*sort_scaling + sort_shift);
+      
+      if(histVal>=0.0)
+        if(histVal<S32K)
+          outHist[0][(int)(histVal)]++; //fill the output histogram
     }
 
+}
+
+double FWHM_response(double ch_in)
+{
+  double ch_out,fwhm,sigma,ch;
+  
+  if(ch_in==0.)
+    return ch_in;
+  
+  ch=ch_in/1000.;
+  // printf("ch: %f, ch_in: %f\n",ch,ch_in);
+  fwhm=sqrt(fwhmF*fwhmF + fwhmG*fwhmG*ch + fwhmH*fwhmH*ch*ch);
+  if(randGen->Uniform()<fwhm2A)//determine whether we are using the first or second gaussian
+    fwhm=fwhm*fwhm2W;//modify the width of the gaussian
+  sigma=fwhm/2.35482;
+  //  printf("sigma: %f\n",sigma);
+  if(sigma>0)
+    ch_out=randGen->Gaus(ch_in,sigma);
+  else
+    ch_out=ch_in;
+  
+  //high energy tail
+  if(fwhmTauH>0);
+    ch_out+=randGen->Exp(fwhmTauH);
+  //low energy tail
+  if(fwhmTauL>0);
+    ch_out-=randGen->Exp(fwhmTauL);
+
+  return ch_out;
 }
