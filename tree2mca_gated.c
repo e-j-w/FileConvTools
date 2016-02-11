@@ -223,29 +223,43 @@ void addTreeDataToOutHist()
 
 double FWHM_response(double ch_in)
 {
-  double ch_out,fwhm,sigma,ch;
-  
   if(ch_in==0.)
     return ch_in;
+
+  double ch_out,fwhm,sigma,ch;
+  double roll=randGen->Uniform();
   
-  ch=ch_in/1000.;
-  // printf("ch: %f, ch_in: %f\n",ch,ch_in);
-  fwhm=sqrt(fwhmF*fwhmF + fwhmG*fwhmG*ch + fwhmH*fwhmH*ch*ch);
-  if(randGen->Uniform()<fwhm2A)//determine whether we are using the first or second gaussian
-    fwhm=fwhm*fwhm2W;//modify the width of the gaussian
-  sigma=fwhm/2.35482;
-  //  printf("sigma: %f\n",sigma);
-  if(sigma>0)
-    ch_out=randGen->Gaus(ch_in,sigma);
-  else
-    ch_out=ch_in;
-  
-  //high energy tail
-  if(fwhmTauH>0);
-    ch_out+=randGen->Exp(fwhmTauH);
-  //low energy tail
-  if(fwhmTauL>0);
-    ch_out-=randGen->Exp(fwhmTauL);
+  if((wL>0.0)||(wH>0.0))//gaussian with exponential tail(s)
+    {
+      if(roll<wG)//gaussian response
+        {
+          ch=ch_in/1000.;
+          fwhm=sqrt(fwhmF*fwhmF + fwhmG*fwhmG*ch + fwhmH*fwhmH*ch*ch);
+          sigma=fwhm/2.35482;
+          if(sigma>0)
+            ch_out=randGen->Gaus(ch_in,sigma);
+          else
+            ch_out=ch_in;
+        }
+      else if(roll<(wG+wH))//high energy exponential response
+        {
+          ch_out = ch_in + randGen->Exp(fwhmTauH);
+        }
+      else//low energy exponential response
+        {
+          ch_out = ch_in - randGen->Exp(fwhmTauL);
+        }
+    }
+  else//gaussian only
+    {
+      ch=ch_in/1000.;
+      fwhm=sqrt(fwhmF*fwhmF + fwhmG*fwhmG*ch + fwhmH*fwhmH*ch*ch);
+      sigma=fwhm/2.35482;
+      if(sigma>0)
+        ch_out=randGen->Gaus(ch_in,sigma);
+      else
+        ch_out=ch_in;
+    }
 
   return ch_out;
 }

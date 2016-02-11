@@ -36,7 +36,9 @@ SORT_DATA_FWHM_RESPONSE
 yes: Apply FWHM response parameters to broaden peaks in the resulting .mca file.
 no: Don't apply FWHM response function.
 FWHM_F, FWHM_G, FWHM_H - Parameters for the FWHM response function, defined as FWHM = sqrt(F*F + G*G*x + H*H*x*x), where x is the .mca channel number / 1000.
-FWHM_2A, FWHM_2W - Area and width of a second Gaussian to fit for the FWHM response, relative to the first Gaussian specified by FWHM_F, FWHM_G, and FWHM_H.
+FWHM_TAU_HIGH - Tau (in channels) of the high energy exponential tail in the response function.  Default: 0.
+FWHM_TAU_LOW - Tau (in channels) of the low energy exponential tail in the response function.  Default: 0.
+GAUS_WEIGHT, EXP_HIGH_WEIGHT, EXP_LOW_WEIGHT - weights of the Gaussian, high energy exponential, and low energy exponential components in the response function.  These should sum to 1, or unexpected behaviour will occur.  If not specified, only the Gaussian component is used.
 
 OUTPUT_FILE - Name of the output .mca file.
 For tree2mca_gated, the OUTPUT_FILE parameter is optional - if used, all data will be sorted into a single .mca file with the filename specified.  Otherwise, individual .mca files for each root tree will be generated with matching filenames.

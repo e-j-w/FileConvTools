@@ -24,7 +24,7 @@ double gate_scaling=1.0;//gate scaling factor
 double gate_shift=0.0;//gate shift in bins
 bool listMode=false; //whether to sort tree files from a list 
 bool fwhmResponse=false; //whether to do energy convolution
-double fwhmF,fwhmG,fwhmH,fwhm2W,fwhm2A,fwhmTauH,fwhmTauL; //energy convolution parameters
+double fwhmF,fwhmG,fwhmH,fwhmTauH,fwhmTauL,wH,wL,wG; //energy convolution parameters
 bool output_specified=false;
 bool file_handler_specified=false;
 bool use_custom_gates=false;

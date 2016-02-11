@@ -81,14 +81,16 @@ void readConfigFile(const char * fileName,const char *configType)
                 fwhmG=atof(str2);
               if(strcmp(str1,"FWHM_H")==0)
                 fwhmH=atof(str2);
-              if(strcmp(str1,"FWHM_2W")==0)
-                fwhm2W=atof(str2);
-              if(strcmp(str1,"FWHM_2A")==0)
-                fwhm2A=atof(str2);
               if(strcmp(str1,"FWHM_TAU_HIGH")==0)
                 fwhmTauH=atof(str2);
               if(strcmp(str1,"FWHM_TAU_LOW")==0)
                 fwhmTauL=atof(str2);
+              if(strcmp(str1,"EXP_HIGH_WEIGHT")==0)
+                wH=atof(str2);
+              if(strcmp(str1,"EXP_LOW_WEIGHT")==0)
+                wL=atof(str2);
+              if(strcmp(str1,"GAUS_WEIGHT")==0)
+                wG=atof(str2);
               if(strcmp(str1,"OUTPUT_FILE")==0)
                 {
                   output_specified=true;
@@ -138,12 +140,10 @@ void readConfigFile(const char * fileName,const char *configType)
         {
           printf("Will apply FWHM response function to sorted data.\n");
           printf("FWHM response function paremeters: F=%f, G=%f, H=%f.\n",fwhmF,fwhmG,fwhmH);
-          if(fwhm2A>0.0)
-            printf("A second Gaussian will be added, with relative area=%0.3f, relative width=%0.3f\n",fwhm2A,fwhm2W);
           if(fwhmTauH>0.0)
-            printf("A high energy exponential tail will be added, with tau=%0.3f channels.\n",fwhmTauH);
+            printf("A high energy exponential tail will be added, with tau=%0.3f channels and weight=%0.3f.\n",fwhmTauH,wH);
           if(fwhmTauL>0.0)
-            printf("A low energy exponential tail will be added, with tau=%0.3f channels.\n",fwhmTauL);
+            printf("A low energy exponential tail will be added, with tau=%0.3f channels and weight=%0.3f.\n",fwhmTauL,wL);
         }
       if(sort_scaling!=1.0)
         printf("Will scale sorted data by a factor of %f\n",sort_scaling);
@@ -166,12 +166,10 @@ void readConfigFile(const char * fileName,const char *configType)
         {
           printf("Will apply FWHM response function to sorted data.\n");
           printf("FWHM response function paremeters: F=%f, G=%f, H=%f.\n",fwhmF,fwhmG,fwhmH);
-          if(fwhm2A>0.0)
-            printf("A second Gaussian will be added, with relative area=%0.3f, relative width=%0.3f\n",fwhm2A,fwhm2W);
           if(fwhmTauH>0.0)
-            printf("A high energy exponential tail will be added, with tau=%0.3f channels.\n",fwhmTauH);
+            printf("A high energy exponential tail will be added, with tau=%0.3f channels and weight=%0.3f.\n",fwhmTauH,wH);
           if(fwhmTauL>0.0)
-            printf("A low energy exponential tail will be added, with tau=%0.3f channels.\n",fwhmTauL);
+            printf("A low energy exponential tail will be added, with tau=%0.3f channels and weight=%0.3f.\n",fwhmTauL,wL);
         }
       if(sort_scaling!=1.0)
         printf("Will scale sorted data by a factor of %f\n",sort_scaling);
