@@ -16,7 +16,8 @@ char cfgstr[256],str1[256],str2[256];
 
 //tree2mca parameters
 char sort_path[256],gate_path[256],inp_filename[256],sort_tree_name[256],gate_tree_name[256],out_filename[256],file_handler[256];
-double custom_gates[NSPECT+1];
+double custom_gates[NSPECT][2];
+double gate_weight[NSPECT];
 int num_custom_gates=0;
 double sort_scaling=1.0;//data scaling factor
 double sort_shift=0.0;//data shift in bins
@@ -28,6 +29,7 @@ double fwhmF,fwhmG,fwhmH,fwhmTauH,fwhmTauL,wH,wL,wG; //energy convolution parame
 bool output_specified=false;
 bool file_handler_specified=false;
 bool use_custom_gates=false;
+bool use_gate_weights=false;
 
 //binnedavgtxt parameters
 char x_branch[256],y_branch[256];

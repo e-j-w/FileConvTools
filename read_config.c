@@ -58,14 +58,29 @@ void readConfigFile(const char * fileName,const char *configType)
                   num_custom_gates=0;
                   while(!(feof(customFile)))//go until the end of file is reached
                     {
-                      if(num_custom_gates<(NSPECT+1))
+                      if(num_custom_gates<NSPECT)
                         if(fgets(str2,256,customFile)!=NULL)
-                          {
-                            custom_gates[num_custom_gates]=atof(str2);
+                          if(sscanf(str2,"%lf %lf",&custom_gates[num_custom_gates][0],&custom_gates[num_custom_gates][1])==2)
                             num_custom_gates++;
-                          }
                     }
-                  num_custom_gates--;
+                  fclose(customFile);
+                }
+              if(strcmp(str1,"CUSTOM_GATE_WEIGHT_FILE")==0)
+                {
+                  if((customFile=fopen(str2,"r"))==NULL)
+                    {
+                      printf("ERROR: Cannot open the custom gate file %s specified in the parameter file!\n",str2);
+                      exit(-1);
+                    }
+                  use_custom_gates=true;
+                  num_custom_gates=0;
+                  while(!(feof(customFile)))//go until the end of file is reached
+                    {
+                      if(num_custom_gates<NSPECT)
+                        if(fgets(str2,256,customFile)!=NULL)
+                          if(sscanf(str2,"%lf %lf %lf",&custom_gates[num_custom_gates][0],&custom_gates[num_custom_gates][1],&gate_weight[num_custom_gates])==3)
+                            num_custom_gates++;
+                    }
                   fclose(customFile);
                 }
               if(strcmp(str1,"SORT_DATA_FWHM_RESPONSE")==0)
@@ -178,8 +193,16 @@ void readConfigFile(const char * fileName,const char *configType)
       if(use_custom_gates==true)
         {
           printf("Using custom gates. %i gates total.\n",num_custom_gates);
-          printf("First gate corresponds to gate data with values ranging from %f to %f\n",custom_gates[0],custom_gates[1]);
-          printf("Last gate corresponds to gate data with values ranging from %f to %f\n",custom_gates[num_custom_gates-1],custom_gates[num_custom_gates]);
+          if(use_gate_weights==false)
+            {
+          printf("First gate corresponds to gate data with values ranging from %f to %f\n",custom_gates[0][0],custom_gates[0][1]);
+          printf("Last gate corresponds to gate data with values ranging from %f to %f\n",custom_gates[num_custom_gates-1][0],custom_gates[num_custom_gates-1][1]);
+            }
+          else
+            {
+              printf("First gate corresponds to gate data with values ranging from %f to %f with weight %f\n",custom_gates[0][0],custom_gates[0][1],gate_weight[0]);
+          printf("Last gate corresponds to gate data with values ranging from %f to %f with weight %f\n",custom_gates[num_custom_gates-1][0],custom_gates[num_custom_gates-1][1],gate_weight[num_custom_gates-1]);
+            }
         }
       else
         {

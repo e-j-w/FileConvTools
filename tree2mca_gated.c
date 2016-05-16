@@ -219,17 +219,49 @@ void addTreeDataToOutHist()
               gate_value = gateLeaf->GetValue(0);//use the first gate value
             }
 
-          for (int k=0;k<NSPECT;k++)
-            if( ((use_custom_gates==false)&&((int)(gate_value*gate_scaling + gate_shift)==k)) || ((use_custom_gates==true)&&(valueInRange(gate_value,custom_gates[k],custom_gates[k+1]))) )
-              {
-                if(fwhmResponse==false)
-                  histVal=sort_value*sort_scaling + sort_shift;
-                else
-                  histVal=FWHM_response(sort_value*sort_scaling + sort_shift);
-                if(histVal>=0.0)
-                  if(histVal<S32K)
-                    outHist[k][(int)(histVal)]++; //fill the output histogram
-              }
+          if(use_custom_gates==false)//no custom weights
+            {
+              for (int k=0;k<NSPECT;k++)
+                if((int)(gate_value*gate_scaling + gate_shift)==k)
+                  {
+                    if(fwhmResponse==false)
+                      histVal=sort_value*sort_scaling + sort_shift;
+                    else
+                      histVal=FWHM_response(sort_value*sort_scaling + sort_shift);
+                    if(histVal>=0.0)
+                      if(histVal<S32K)
+                        outHist[k][(int)(histVal)]++; //fill the output histogram
+                  }
+            }
+          else if(use_gate_weights==false)//custom gates used without weights
+            {
+              for (int k=0;k<NSPECT;k++)
+                if(valueInRange(gate_value,custom_gates[k][0],custom_gates[k][1]))
+                  {
+                    if(fwhmResponse==false)
+                      histVal=sort_value*sort_scaling + sort_shift;
+                    else
+                      histVal=FWHM_response(sort_value*sort_scaling + sort_shift);
+                    if(histVal>=0.0)
+                      if(histVal<S32K)
+                        outHist[k][(int)(histVal)]++; //fill the output histogram
+                  }
+            }
+          else//custom gates used with weights
+            {
+              for (int k=0;k<NSPECT;k++)
+                if(valueInRange(gate_value,custom_gates[k][0],custom_gates[k][1]))
+                  if(randGen->Uniform()<gate_weight[k])
+                    {
+                      if(fwhmResponse==false)
+                        histVal=sort_value*sort_scaling + sort_shift;
+                      else
+                        histVal=FWHM_response(sort_value*sort_scaling + sort_shift);
+                      if(histVal>=0.0)
+                        if(histVal<S32K)
+                          outHist[k][(int)(histVal)]++; //fill the output histogram
+                    }
+            }
         }
     }
 
@@ -306,5 +338,4 @@ bool valueInRange(double value, double bound1, double bound2)
     }
     
   return false;
-
 }
