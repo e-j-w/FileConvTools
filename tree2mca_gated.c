@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
       if((gtree = (TTree*)inp->Get(gate_tree_name))==NULL)
         {
           printf("The specified tree named %s doesn't exist, trying default name 'tree'.\n",gate_tree_name);
-          if((stree = (TTree*)inp->Get("tree"))==NULL)//try the default tree name
+          if((gtree = (TTree*)inp->Get("tree"))==NULL)//try the default tree name
             {
               printf("ERROR: The specified tree named %s (within the ROOT file) cannot be opened!\n",gate_tree_name);
               exit(-1);
@@ -219,7 +219,7 @@ void addTreeDataToOutHist()
               gate_value = gateLeaf->GetValue(0);//use the first gate value
             }
 
-          if(use_custom_gates==false)//no custom weights
+          if(use_custom_gates==0)//no custom weights
             {
               for (int k=0;k<NSPECT;k++)
                 if((int)(gate_value*gate_scaling + gate_shift)==k)

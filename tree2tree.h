@@ -1,5 +1,5 @@
-#ifndef TREE2MCA
-#define TREE2MCA
+#ifndef TREE2TREE
+#define TREE2TREE
 
 #include "common.h"
 
@@ -13,16 +13,14 @@
 #include "TApplication.h"
 
 //forward declarations
-void addTreeDataToOutHist();
 double FWHM_response(double);
 bool valueInRange(double, double, double);
 
-int outHist[NSPECT][S32K];
-
-TTree *stree,*gtree;
+TFile *f;
+TTree *gtree;
 TLeaf *sortLeaf, *gateLeaf;
 TBranch *sortBranch, *gateBranch;
-TApplication *theApp;
+//TApplication *theApp;
 TRandom3 *randGen;
 
 #endif
