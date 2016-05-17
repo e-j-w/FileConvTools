@@ -1,7 +1,7 @@
 CFLAGS = -O -Wall -fPIC -ansi
 ROOT = $(shell $(ROOTSYS)/bin/root-config --glibs) $(shell $(ROOTSYS)/bin/root-config --cflags)
 
-all: tree2mca tree2mca_gated tree2binnedavgtxt analyze_mca add_mca contract_mca sum_mca mca2txt txt2mca txt2binnedavgtxt chn2mca spx2mca tree2tree
+all: tree2mca tree2mca_gated tree2binnedavgtxt analyze_mca add_mca contract_mca sum_mca mca2txt txt2mca txt2binnedavgtxt chn2mca spx2mca tree2tree tree_gate_intensity add_tree
 no_root: analyze_mca add_mca contract_mca sum_mca mca2txt txt2mca txt2binnedavgtxt chn2mca spx2mca
 	
 spx2mca: spx2mca.c common.h
@@ -42,6 +42,12 @@ tree2binnedavgtxt: tree2binnedavgtxt.c tree2binnedavgtxt.h read_config.c
 
 tree2tree: tree2tree.c tree2tree.h read_config.c
 	g++ tree2tree.c $(CFLAGS) $(ROOT) -o tree2tree
+	
+tree_gate_intensity: tree_gate_intensity.c tree2tree.h read_config.c
+	g++ tree_gate_intensity.c $(CFLAGS) $(ROOT) -o tree_gate_intensity
+
+add_tree: add_tree.c common.h
+	g++ add_tree.c $(CFLAGS) $(ROOT) -o add_tree
 
 clean:
-	rm -rf *~ tree2mca tree2mca_gated analyze_mca add_mca contract_mca sum_mca mca2txt txt2mca txt2binnedavgtxt tree2binnedavgtxt chn2mca spx2mca tree2tree
+	rm -rf *~ tree2mca tree2mca_gated analyze_mca add_mca contract_mca sum_mca mca2txt txt2mca txt2binnedavgtxt tree2binnedavgtxt chn2mca spx2mca tree2tree tree_gate_intensity add_tree
