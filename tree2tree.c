@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
           }
       if(gateLeaf==NULL)
         gateLeaf = (TLeaf*)gateBranch->GetListOfLeaves()->First(); //get the first leaf from the specified branch
-      printf("Paths to sort and gate data set.\n");
+      printf("Path to gate data set.\n");
       
       //set up the output file (must be done before setting up the output tree)
       TFile *f;
@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
                         if(randGen->Uniform()<gate_weight[k])
                           dropFlag=false;
                   }
-                
+              
               if(use_custom_gates==2)//2D gate
                 for(int j=0; j<gateLeaf->GetNdata(); j++) //deal with multiple fold events
                   for(int k=j+1; k<gateLeaf->GetNdata(); k++)
@@ -97,11 +97,20 @@ int main(int argc, char *argv[])
                       gate_value[0] = gateLeaf->GetValue(j);
                       gate_value[1] = gateLeaf->GetValue(k);
                       for (int l=0;l<num_custom_gates;l++)
-                        if(valueInRange(gate_value[0],custom_gates[l][0],custom_gates[l][1]))
-                          if(valueInRange(gate_value[1],custom_gates[l][2],custom_gates[l][3]))
+                        if((valueInRange(gate_value[0],custom_gates[l][0],custom_gates[l][1]))&&(valueInRange(gate_value[1],custom_gates[l][2],custom_gates[l][3])))
+                          {
                             if(randGen->Uniform()<gate_weight[l])
                               dropFlag=false;
+                            break;
+                          }
+                        else if((valueInRange(gate_value[0],custom_gates[l][2],custom_gates[l][3]))&&(valueInRange(gate_value[1],custom_gates[l][0],custom_gates[l][1])))
+                          {
+                            if(randGen->Uniform()<gate_weight[l])
+                              dropFlag=false;
+                            break;
+                          }
                     }
+                
             }
           
           if(dropFlag==false)
@@ -109,7 +118,7 @@ int main(int argc, char *argv[])
         }
         
       printf("Number of entries retained in output tree: %Ld\n",sortedTree->GetEntries());
-      
+      f->Write();
       delete f;//close the output file
     }
     
