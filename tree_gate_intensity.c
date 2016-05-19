@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
   for (int i=0;i<num_custom_gates;i++)
     printf("%i    %li\n",i+1,numEv[i]);
   if(use_custom_gates==2)
-    printf("NOTE: some entries may be 0 since double counting is not allowed.");
+    printf("NOTE: some entries may be 0 since double counting is not allowed.\n");
     
   return 0; //great success
 }

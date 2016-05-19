@@ -14,7 +14,7 @@ TApplication *theApp=new TApplication("App", &ac, av);
 int main(int argc, char *argv[])
 {
 
-  //FILE *list;
+  FILE *list;
   TFile *inp;
   randGen = new TRandom3();
 
@@ -27,7 +27,118 @@ int main(int argc, char *argv[])
 
   readConfigFile(argv[1],"tree2tree"); //grab data from the parameter file
   
-  //WILL WANT TO IMPLEMENT LIST SORTING LATER
+  //sort list of ROOT files
+  if(listMode==true)
+    { 
+      //read in tree list file
+      if((list=fopen(inp_filename,"r"))==NULL)
+        {
+          printf("ERROR: Cannot open the input list file %s!\n",inp_filename);
+          exit(-1);
+        } 
+      //scan the list file for ROOT files and put their data into the output hitogram
+      while(fscanf(list,"%s",str)!=EOF)
+        {
+  
+          inp = new TFile(str,"read");
+          if((gtree = (TTree*)inp->Get(gate_tree_name))==NULL)
+            {
+              printf("The specified tree named %s doesn't exist, trying default name 'tree'.\n",gate_tree_name);
+              if((gtree = (TTree*)inp->Get("tree"))==NULL)//try the default tree name
+                {
+                  printf("ERROR: The specified tree named %s (within the ROOT file) cannot be opened!\n",gate_tree_name);
+                  exit(-1);
+                }
+            }
+          printf("Tree in %s read out.\n",inp_filename);
+
+          if((gateLeaf = gtree->GetLeaf(gate_path))==NULL)
+            if((gateBranch = gtree->GetBranch(gate_path))==NULL)
+              {
+                printf("ERROR: Gate data path '%s' doesn't correspond to a branch or leaf in the tree!\n",gate_path);
+                exit(-1);
+              }
+          if(gateLeaf==NULL)
+            gateLeaf = (TLeaf*)gateBranch->GetListOfLeaves()->First(); //get the first leaf from the specified branch
+          printf("Path to gate data set.\n");
+          
+          //set up the output file (must be done before setting up the output tree)
+          TFile *f;   
+          if(output_specified==true)
+            {
+              char tmp[256];
+              strcpy(tmp,out_filename);
+              f = new TFile(strcat(tmp,str),"recreate");
+            }
+          else
+            f = new TFile(strcat(str,"_out"),"recreate");
+          TTree *sortedTree = gtree->CloneTree(0);
+          printf("Output tree set up.\n");
+          
+          //sort the tree data
+          Double_t gate_value[2];
+          long long int entries;
+          bool dropFlag=true;
+          
+          entries=gtree->GetEntries();
+          printf("Number of entries in input tree: %Ld\n",entries);
+          
+          for (int i=0;i<entries;i++)
+            {
+              gtree->GetEntry(i);
+              
+              //printf("Values in gate leaf: %i\n",gateLeaf->GetNdata()); 
+              
+              dropFlag=true;
+              if(use_gate_weights==true)//custom gates used with weights
+                {
+                  if(use_custom_gates==1)//1D gate
+                    for(int j=0; j<gateLeaf->GetNdata(); j++) //deal with multiple fold events
+                      {
+                        gate_value[0] = gateLeaf->GetValue(j);
+                        for (int k=0;k<num_custom_gates;k++)
+                          if(valueInRange(gate_value[0],custom_gates[k][0],custom_gates[k][1]))
+                            if(randGen->Uniform()<gate_weight[k])
+                              dropFlag=false;
+                      }
+                  
+                  if(use_custom_gates==2)//2D gate
+                    for(int j=0; j<gateLeaf->GetNdata(); j++) //deal with multiple fold events
+                      for(int k=j+1; k<gateLeaf->GetNdata(); k++)
+                        {
+                          gate_value[0] = gateLeaf->GetValue(j);
+                          gate_value[1] = gateLeaf->GetValue(k);
+                          for (int l=0;l<num_custom_gates;l++)
+                            if((valueInRange(gate_value[0],custom_gates[l][0],custom_gates[l][1]))&&(valueInRange(gate_value[1],custom_gates[l][2],custom_gates[l][3])))
+                              {
+                                if(randGen->Uniform()<gate_weight[l])
+                                  dropFlag=false;
+                                break;
+                              }
+                            else if((valueInRange(gate_value[0],custom_gates[l][2],custom_gates[l][3]))&&(valueInRange(gate_value[1],custom_gates[l][0],custom_gates[l][1])))
+                              {
+                                if(randGen->Uniform()<gate_weight[l])
+                                  dropFlag=false;
+                                break;
+                              }
+                        }
+                    
+                }
+              
+              if(dropFlag==false)
+                sortedTree->Fill();//keep the event
+            }
+            
+          printf("Number of entries retained in output tree: %Ld\n",sortedTree->GetEntries());
+          f->Write();
+          delete f;//close the output file  
+            
+            
+        }
+    }
+  
+  
+  
   //sort a single ROOT file  
   if(listMode==false)
     {
