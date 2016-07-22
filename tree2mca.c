@@ -147,16 +147,20 @@ void addTreeDataToOutHist()
   for (int i=0;i<stree->GetEntries();i++)
     {
       stree->GetEntry(i);
-      sort_value = sortLeaf->GetValue(0);
       
-      if(fwhmResponse==false)
-        histVal=sort_value*sort_scaling + sort_shift;
-      else
-        histVal=FWHM_response(sort_value*sort_scaling + sort_shift);
-      
-      if(histVal>=0.0)
-        if(histVal<S32K)
-          outHist[0][(int)(histVal)]++; //fill the output histogram
+      for(int j=0; j<sortLeaf->GetNdata(); j++) //deal with multiple fold events
+        {
+          sort_value = sortLeaf->GetValue(j);
+          
+          if(fwhmResponse==false)
+            histVal=sort_value*sort_scaling + sort_shift;
+          else
+            histVal=FWHM_response(sort_value*sort_scaling + sort_shift);
+          
+          if(histVal>=0.0)
+            if(histVal<S32K)
+              outHist[0][(int)(histVal)]++; //fill the output histogram
+        }
     }
 
 }

@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
       if((gtree = (TTree*)inp->Get(gate_tree_name))==NULL)
         {
           printf("The specified tree named %s doesn't exist, trying default name 'tree'.\n",gate_tree_name);
-          if((stree = (TTree*)inp->Get("tree"))==NULL)//try the default tree name
+          if((gtree = (TTree*)inp->Get("tree"))==NULL)//try the default tree name
             {
               printf("ERROR: The specified tree named %s (within the ROOT file) cannot be opened!\n",gate_tree_name);
               exit(-1);
@@ -203,20 +203,66 @@ void addTreeDataToOutHist()
       stree->GetEntry(i);
       gtree->GetEntry(i);
       
-      sort_value = sortLeaf->GetValue(0);
-      gate_value = gateLeaf->GetValue(0);
+      //printf("Values in sort leaf: %i\n",sortLeaf->GetNdata());
+      //printf("Values in gate leaf: %i\n",gateLeaf->GetNdata()); 
+      
+      for(int j=0; j<sortLeaf->GetNdata(); j++) //deal with multiple fold events
+        {
+          if(sortLeaf->GetNdata()==gateLeaf->GetNdata())
+            {
+              sort_value = sortLeaf->GetValue(j);
+              gate_value = gateLeaf->GetValue(j);
+            }
+          else
+            {
+              sort_value = sortLeaf->GetValue(j);
+              gate_value = gateLeaf->GetValue(0);//use the first gate value
+            }
 
-      for (int j=0;j<NSPECT;j++)
-        if( ((use_custom_gates==false)&&((int)(gate_value*gate_scaling + gate_shift)==j)) || ((use_custom_gates==true)&&(valueInRange(gate_value,custom_gates[j],custom_gates[j+1]))) )
-          {
-            if(fwhmResponse==false)
-              histVal=sort_value*sort_scaling + sort_shift;
-            else
-              histVal=FWHM_response(sort_value*sort_scaling + sort_shift);
-            if(histVal>=0.0)
-              if(histVal<S32K)
-                outHist[j][(int)(histVal)]++; //fill the output histogram
-          }        
+          if(use_custom_gates==0)//no custom weights
+            {
+              for (int k=0;k<NSPECT;k++)
+                if((int)(gate_value*gate_scaling + gate_shift)==k)
+                  {
+                    if(fwhmResponse==false)
+                      histVal=sort_value*sort_scaling + sort_shift;
+                    else
+                      histVal=FWHM_response(sort_value*sort_scaling + sort_shift);
+                    if(histVal>=0.0)
+                      if(histVal<S32K)
+                        outHist[k][(int)(histVal)]++; //fill the output histogram
+                  }
+            }
+          else if(use_gate_weights==false)//custom gates used without weights
+            {
+              for (int k=0;k<NSPECT;k++)
+                if(valueInRange(gate_value,custom_gates[k][0],custom_gates[k][1]))
+                  {
+                    if(fwhmResponse==false)
+                      histVal=sort_value*sort_scaling + sort_shift;
+                    else
+                      histVal=FWHM_response(sort_value*sort_scaling + sort_shift);
+                    if(histVal>=0.0)
+                      if(histVal<S32K)
+                        outHist[k][(int)(histVal)]++; //fill the output histogram
+                  }
+            }
+          else//custom gates used with weights
+            {
+              for (int k=0;k<NSPECT;k++)
+                if(valueInRange(gate_value,custom_gates[k][0],custom_gates[k][1]))
+                  if(randGen->Uniform()<gate_weight[k])
+                    {
+                      if(fwhmResponse==false)
+                        histVal=sort_value*sort_scaling + sort_shift;
+                      else
+                        histVal=FWHM_response(sort_value*sort_scaling + sort_shift);
+                      if(histVal>=0.0)
+                        if(histVal<S32K)
+                          outHist[k][(int)(histVal)]++; //fill the output histogram
+                    }
+            }
+        }
     }
 
 }
@@ -292,5 +338,4 @@ bool valueInRange(double value, double bound1, double bound2)
     }
     
   return false;
-
 }

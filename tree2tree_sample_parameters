@@ -1,0 +1,25 @@
+INPUT_FILE                  7423plungertest_1_run1.root
+GATE_TREE_NAME              tree
+GATE_PATH                   CsIr
+CUSTOM_GATE_WEIGHT_FILE     custom_weighted_gates
+OUTPUT_FILE                 output.root
+
+<---END_OF_PARAMETERS--->
+
+This is a configuration file for the tree2tree code.
+If you change the format of the file, prepare for unforseen
+consequences.
+
+Parameter list:
+
+INPUT_FILE - Path to a single ROOT file to take tree data from.  Incompatible with INPUT_FILE_LIST.
+INPUT_FILE_LIST - Path to a list of ROOT files (plaintext, one file path per line) to take tree data from.  Incompatible with INPUT_FILE.
+
+GATE_TREE_NAME - Name of the tree inside the specified ROOT file(s) containing gate data.
+SORT_PATH - Path to the branch/leaf containing the data to be sorted.  Folder paths are designated with forward slashes eg. 'resDec/E' sorts data from the leaf with name 'E' in the branch 'resDec'.
+GATE_PATH - Path to the branch/leaf containing gate data.  Folder paths are designated with forward slashes as in SORT_PATH.
+
+CUSTOM_GATE_WEIGHT_FILE - Path to a plaintext file containing custom gate definitions and associated weights (for dropping a percentage of events that fall in these gates).  In the included 'custom_weighted_gates' file there are 6 gated regions, the first corresponding to tree entries where the gate data falls between 1.09 and 1.05 (lower bound inclusive) with weight 1, and the last corresponding to entries where the gate data falls between 0.95 and 0.92 with weight 0.5.  Custom gate boundaries may be listed in ascending or descending order.
+CUSTOM_2D_GATE_WEIGHT_FILE - Similar to above but with two weight bounds (5 columns instead of 3, weights in column 5) which are checked for different data values in each ROOT tree entry.
+
+OUTPUT_FILE - Name of the output .root file to write the tree to.  If a list of input files was specified, output filenames will be the same as input filenames, with the value specified in OUTPUT_FILE used as a prefix.

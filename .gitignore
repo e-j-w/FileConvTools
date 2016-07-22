@@ -1,5 +1,6 @@
 analyze_mca
 add_mca
+add_tree
 contract_mca
 sum_mca
 mca2txt
@@ -9,6 +10,8 @@ tree2mca
 treelist2mca
 tree2mca_gated
 tree2binnedavgtxt
+tree2tree
+tree_gate_intensity
 chn2mca
 spe2mca
 spx2mca
