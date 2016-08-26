@@ -20,6 +20,7 @@ all:
 	cd txt2mca && make
 no_root:
 	@echo Making programs which don"'"t depend on ROOT.
+	@echo ""
 	if [ ! -d bin ]; then mkdir bin; fi
 	cd add_mca && make
 	cd analyze_mca && make
