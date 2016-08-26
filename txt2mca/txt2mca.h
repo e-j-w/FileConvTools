@@ -1,12 +1,12 @@
-#ifndef COMMON
-#define COMMON
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 
 #define S32K   32768
 #define NSPECT 100
+
+//forward declarations
+void readFileToArrays(const char *);
 
 //PARAMETERS
 
@@ -39,5 +39,4 @@ double binSize=1.0;
 double max_x;
 bool use_max_x=false;
 
-#endif
-
+int outHist[NSPECT][S32K];

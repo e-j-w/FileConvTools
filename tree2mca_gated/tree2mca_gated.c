@@ -1,4 +1,4 @@
-#include "tree2mca.h"
+#include "tree2mca_gated.h"
 #include "read_config.c"
 
 char str[256];

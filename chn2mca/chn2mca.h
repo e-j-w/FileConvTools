@@ -1,6 +1,3 @@
-#ifndef COMMON
-#define COMMON
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -38,6 +35,4 @@ double val_scaling=1.0;
 double binSize=1.0;
 double max_x;
 bool use_max_x=false;
-
-#endif
 

@@ -1,5 +1,5 @@
 #include <string.h>
-#include "common.h"
+#include "spx2mca.h"
 
 #define SPX_DIM    16384
 

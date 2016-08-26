@@ -1,7 +1,6 @@
 #include "txt2binnedavgtxt.h"
 #include "read_config.c"
 
-
 int main(int argc, char *argv[])
 {
   

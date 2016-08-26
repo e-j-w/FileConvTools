@@ -1,4 +1,4 @@
-#include "tree2tree.h"
+#include "tree_gate_intensity.h"
 #include "read_config.c"
 
 //forward declarations

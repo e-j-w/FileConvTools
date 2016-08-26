@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <stdint.h>
-#include "common.h"
+#include "chn2mca.h"
 
 #define CHN    -1
 #define CHN_DIM    16384

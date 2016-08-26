@@ -1,4 +1,4 @@
-#include "mca.h"
+#include "mca2txt.h"
 
 int inpHist[NSPECT][S32K];
 char str[256];

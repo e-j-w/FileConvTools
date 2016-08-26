@@ -1,4 +1,4 @@
-#include "mca.h"
+#include "txt2mca.h"
 #include "read_config.c"
 
 double ch[S32K],val[S32K];

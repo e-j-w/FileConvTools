@@ -1,5 +1,4 @@
 #include <string.h>
-#include "common.h"
 
 void readConfigFile(const char * fileName,const char *configType) 
 {

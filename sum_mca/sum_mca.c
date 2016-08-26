@@ -1,4 +1,4 @@
-#include "mca.h"
+#include "sum_mca.h"
 
 int inpHist1[NSPECT][S32K],inpHist2[NSPECT][S32K];
 char str[256];

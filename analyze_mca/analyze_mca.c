@@ -1,5 +1,5 @@
 #include <string.h>
-#include "mca.h"
+#include "analyze_mca.h"
 
 int inpHist[S32K][S32K];
 long long int counts[S32K];

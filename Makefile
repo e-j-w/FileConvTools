@@ -1,5 +1,7 @@
 all:
-	@echo Making all programs.  If this fails, try "'make no_root'".
+	@echo Making all programs.  If this fails, try "'make no_root'"
+	@echo to only make programs which don"'"t depend on ROOT.
+	@echo ""
 	if [ ! -d bin ]; then mkdir bin; fi
 	cd add_mca && make
 	cd add_tree && make
@@ -10,6 +12,7 @@ all:
 	cd spx2mca && make
 	cd sum_mca && make
 	cd tree2binnedavgtxt && make
+	cd tree2mca && make
 	cd tree2mca_gated && make
 	cd tree2tree && make
 	cd tree_gate_intensity && make

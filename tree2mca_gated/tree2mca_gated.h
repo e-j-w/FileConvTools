@@ -1,5 +1,11 @@
-#ifndef COMMON
-#define COMMON
+//ROOT stuff
+#include "TRandom3.h"
+#include "TMath.h"
+#include "TTree.h"
+#include "TLeaf.h"
+#include "TBranch.h"
+#include "TFile.h"
+#include "TApplication.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -7,6 +13,11 @@
 
 #define S32K   32768
 #define NSPECT 100
+
+//forward declarations
+void addTreeDataToOutHist();
+double FWHM_response(double);
+bool valueInRange(double, double, double);
 
 //PARAMETERS
 
@@ -39,5 +50,13 @@ double binSize=1.0;
 double max_x;
 bool use_max_x=false;
 
-#endif
+int outHist[NSPECT][S32K];
+
+TTree *stree,*gtree;
+TLeaf *sortLeaf, *gateLeaf;
+TBranch *sortBranch, *gateBranch;
+TApplication *theApp;
+TRandom3 *randGen;
+
+
 
