@@ -155,7 +155,10 @@ void addTreeDataToOutHist()
           if(fwhmResponse==false)
             histVal=sort_value*sort_scaling + sort_shift;
           else
-            histVal=FWHM_response(sort_value*sort_scaling + sort_shift);
+            {
+            	histVal=FWHM_response(sort_value);
+            	histVal=histVal*sort_scaling + sort_shift;
+            }
           
           if(histVal>=0.0)
             if(histVal<S32K)

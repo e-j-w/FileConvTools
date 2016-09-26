@@ -20,8 +20,8 @@ To make codes which depend on ROOT, environment variables related to ROOT must b
 ```
 #ROOT configuration
 export ROOTSYS=/path/to/root
-export ROOTINC=/path/to/root/include
-export ROOTLIB=/path/to/root/lib
+export ROOTINC=$ROOTSYS/include
+export ROOTLIB=$ROOTSYS/lib
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ROOTLIB
 ```
 

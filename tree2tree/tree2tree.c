@@ -236,49 +236,6 @@ int main(int argc, char *argv[])
   return 0; //great success
 }
 
-double FWHM_response(double ch_in)
-{
-  if(ch_in==0.)
-    return ch_in;
-
-  double ch_out,fwhm,sigma,ch;
-  double roll=randGen->Uniform();
-  
-  if((wL>0.0)||(wH>0.0))//gaussian with exponential tail(s)
-    {
-      if(roll<wG)//gaussian response
-        {
-          ch=ch_in/1000.;
-          fwhm=sqrt(fwhmF*fwhmF + fwhmG*fwhmG*ch + fwhmH*fwhmH*ch*ch);
-          sigma=fwhm/2.35482;
-          if(sigma>0)
-            ch_out=randGen->Gaus(ch_in,sigma);
-          else
-            ch_out=ch_in;
-        }
-      else if(roll<(wG+wH))//high energy exponential response
-        {
-          ch_out = ch_in + randGen->Exp(fwhmTauH);
-        }
-      else//low energy exponential response
-        {
-          ch_out = ch_in - randGen->Exp(fwhmTauL);
-        }
-    }
-  else//gaussian only
-    {
-      ch=ch_in/1000.;
-      fwhm=sqrt(fwhmF*fwhmF + fwhmG*fwhmG*ch + fwhmH*fwhmH*ch*ch);
-      sigma=fwhm/2.35482;
-      if(sigma>0)
-        ch_out=randGen->Gaus(ch_in,sigma);
-      else
-        ch_out=ch_in;
-    }
-
-  return ch_out;
-}
-
 //checks whether a value falls within the range of two bounds (lower bound inclusive)
 //the order of the bounds doesn't matter
 bool valueInRange(double value, double bound1, double bound2)
