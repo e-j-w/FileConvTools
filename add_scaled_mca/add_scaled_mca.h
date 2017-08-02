@@ -43,4 +43,5 @@ int  readMCA(FILE* inp,char* filename,float inpHist[NSPECT][S32K]);
 int  readFMCA(FILE* inp,char* filename,float inpHist[NSPECT][S32K]);
 
 float outHist[NSPECT][S32K];
+int iOutHist[NSPECT][S32K];
 
