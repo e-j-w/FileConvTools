@@ -51,9 +51,9 @@ int main(int argc, char *argv[])
       // read in input1
       const char *dot1 = strrchr(argv[1], '.'); // get the file extension
       if(strcmp(dot1 + 1,"mca")==0)
-	readMCA(input1,argv[1],inpHist1);
+				readMCA(input1,argv[1],inpHist1);
       else if(strcmp(dot1 + 1,"fmca")==0)
-	readFMCA(input1,argv[1],inpHist1);
+				readFMCA(input1,argv[1],inpHist1);
       else
 				{
 					printf("ERROR: Improper type of input file: %s\n",argv[1]);
@@ -72,9 +72,9 @@ int main(int argc, char *argv[])
       // read in input2
       const char *dot2 = strrchr(argv[3], '.'); // get the file extension
       if(strcmp(dot2 + 1,"mca")==0)
-	readMCA(input2,argv[3],inpHist2);
+				readMCA(input2,argv[3],inpHist2);
       else if(strcmp(dot2 + 1,"fmca")==0)
-	readFMCA(input2,argv[3],inpHist2);
+				readFMCA(input2,argv[3],inpHist2);
       else
 				{
 					printf("ERROR: Improper type of input file: %s\n",argv[2]);
