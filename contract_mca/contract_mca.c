@@ -59,10 +59,6 @@ int main(int argc, char *argv[])
   //read in command line arguments
   cntr=atoi(argv[2]);
   printf("Using a contraction factor of %i.\n",cntr);
-
-
-  //read in the .mca file
-  
   
   // read in input file
 	if((input=fopen(argv[1],"r"))==NULL)
