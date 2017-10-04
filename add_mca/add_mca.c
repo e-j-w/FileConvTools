@@ -140,9 +140,9 @@ int main(int argc, char *argv[])
         {
         
         	// read in input2
-        	if((input2=fopen(argv[2],"r"))==NULL)
+        	if((input2=fopen(str,"r"))==NULL)
 				    {
-				      printf("ERROR: Cannot open the input file %s!\n",argv[3]);
+				      printf("ERROR: Cannot open the input file %s!\n",str);
 				      exit(-1);
 				    }
 				  const char *dot2 = strrchr(str, '.'); // get the file extension
