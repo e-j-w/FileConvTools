@@ -1,4 +1,4 @@
-#include "tree2mca_group.h"
+#include "tree2mca_group_2Dmap.h"
 #include "read_config.c"
 
 char str[256];
@@ -13,7 +13,7 @@ int main(int argc, char *argv[]) {
   char *av[10];
   theApp = new TApplication("App", &ac, av);
 
-  FILE *list, *output, *output1;
+  FILE *list, *output;
   TFile *inp;
   randGen = new TRandom3();
 
@@ -30,8 +30,7 @@ int main(int argc, char *argv[]) {
   // initialize histograms
   for (int i = 0; i < NSPECT; i++)
     for (int j = 0; j < S32K; j++) {
-      dOutHist[i][j] = 0.; // initialize all elements to 0
-      groupHist[i][j] = 0;
+      outHist[i][j] = 0; // initialize all elements to 0
     }
 
   // sort list of ROOT files
@@ -74,18 +73,19 @@ int main(int argc, char *argv[]) {
                 ->First(); // get the first leaf from the specified branch
 
       // weight leaf
-      if ((weightLeaf = stree->GetLeaf(weight_path)) == NULL)
-        if ((weightBranch = stree->GetBranch(weight_path)) == NULL) {
-          printf("ERROR: Weight data path '%s' doesn't correspond to a branch "
-                 "or leaf in the tree!\n",
-                 weight_path);
-          exit(-1);
-        }
-      if (weightLeaf == NULL)
-        weightLeaf =
-            (TLeaf *)weightBranch->GetListOfLeaves()
-                ->First(); // get the first leaf from the specified branch
-
+      if(use_weights) {
+        if ((weightLeaf = stree->GetLeaf(weight_path)) == NULL)
+          if ((weightBranch = stree->GetBranch(weight_path)) == NULL) {
+            printf("ERROR: Weight data path '%s' doesn't correspond to a branch "
+                  "or leaf in the tree!\n",
+                  weight_path);
+            exit(-1);
+          }
+        if (weightLeaf == NULL)
+          weightLeaf =
+              (TLeaf *)weightBranch->GetListOfLeaves()
+                  ->First(); // get the first leaf from the specified branch
+      }
       // position leaf
       if ((posLeaf = stree->GetLeaf(pos_path)) == NULL)
         if ((posBranch = stree->GetBranch(pos_path)) == NULL) {
@@ -136,22 +136,15 @@ int main(int argc, char *argv[]) {
                  strcat(str, ".mca"));
           exit(-1);
         }
-        if ((output1 = fopen("groupHist.mca", "w")) == NULL) {
-          printf("ERROR: Cannot open the group histogram .mca file\n");
-          exit(-1);
-        }
         for (int i = 0; i < NSPECT; i++) {
-          fwrite(dOutHist[i], S32K * sizeof(float), 1, output);
-          fwrite(groupHist[i], S32K * sizeof(int), 1, output1);
+          fwrite(outHist[i], S32K * sizeof(int), 1, output);
         }
         fclose(output);
-        fclose(output1);
 
         // reset the output histogram
         for (int i = 0; i < NSPECT; i++)
           for (int j = 0; j < S32K; j++) {
-            dOutHist[i][j] = 0.;
-            groupHist[i][j] = 0;
+            outHist[i][j] = 0;
           }
       }
     }
@@ -189,18 +182,19 @@ int main(int argc, char *argv[]) {
                      ->First(); // get the first leaf from the specified branch
 
     // weight leaf
-    if ((weightLeaf = stree->GetLeaf(weight_path)) == NULL)
-      if ((weightBranch = stree->GetBranch(weight_path)) == NULL) {
-        printf("ERROR: Weight data path '%s' doesn't correspond to a branch or "
-               "leaf in the tree!\n",
-               weight_path);
-        exit(-1);
-      }
-    if (weightLeaf == NULL)
-      weightLeaf =
-          (TLeaf *)weightBranch->GetListOfLeaves()
-              ->First(); // get the first leaf from the specified branch
-
+    if (use_weights) {
+      if ((weightLeaf = stree->GetLeaf(weight_path)) == NULL)
+        if ((weightBranch = stree->GetBranch(weight_path)) == NULL) {
+          printf("ERROR: Weight data path '%s' doesn't correspond to a branch or "
+                "leaf in the tree!\n",
+                weight_path);
+          exit(-1);
+        }
+      if (weightLeaf == NULL)
+        weightLeaf =
+            (TLeaf *)weightBranch->GetListOfLeaves()
+                ->First(); // get the first leaf from the specified branch
+    }
     if ((posLeaf = stree->GetLeaf(pos_path)) == NULL)
       if ((posBranch = stree->GetBranch(pos_path)) == NULL) {
         printf("ERROR: Pos data path '%s' doesn't correspond to a branch or "
@@ -243,20 +237,14 @@ int main(int argc, char *argv[]) {
 
   // write the output histogram to disk
   if ((output = fopen(out_filename, "w")) == NULL) {
-    printf("ERROR: Cannot open the output .fmca file!\n");
-    exit(-1);
-  }
-  if ((output1 = fopen("groupHist.mca", "w")) == NULL) {
-    printf("ERROR: Cannot open the group histogram .mca file!\n");
+    printf("ERROR: Cannot open the output .mca file!\n");
     exit(-1);
   }
 
   for (int i = 0; i < NSPECT; i++) {
-    fwrite(dOutHist[i], S32K * sizeof(float), 1, output);
-    fwrite(groupHist[i], S32K * sizeof(int), 1, output1);
+    fwrite(outHist[i], S32K * sizeof(int), 1, output);
   }
   fclose(output);
-  fclose(output1);
 
   return 0; // great success
 }
@@ -266,55 +254,41 @@ int main(int argc, char *argv[]) {
 // the output histogram.
 void addTreeDataToOutHist() {
   Double_t sort_value, weight_value;
-  Int_t pos, col, csi, group;
+  Int_t pos, col, csi1, csi2, group;
   double histVal;
 
   for (int i = 0; i < stree->GetEntries(); i++) {
     stree->GetEntry(i);
     for (int j = 0; j < sortLeaf->GetLen(); j++) {
       sort_value = sortLeaf->GetValue(j);     // in keV
-      weight_value = weightLeaf->GetValue(j); // weight
+      if (use_weights)
+        weight_value = weightLeaf->GetValue(j); // weight
+      else
+        weight_value = 1.;
       pos = posLeaf->GetValue(j);
       col = colLeaf->GetValue(j);
-      csi = csiLeaf->GetValue(0); // recoil in csi only once per event
-      group = group_map[pos][col][csi];
+      csi1 = csiLeaf->GetValue(0);
+      if(csiLeaf->GetNdata()>1){
+        csi2 = csiLeaf->GetValue(1);
+        group = group_map[pos][col][csi1][csi2];
 
-      /* printf("pos %2d col %1d E %.3f w %.3f csi %2d E
-       * %.3f\n",pos,col,sort_value,weight_value,csi,csiE); */
-      /* getc(stdin); */
+        //int hpge = (pos - 1) * 4 + col; // 0-3 pos1, 4-7 pos2, etc.
+        
+        if (sort_value >= 0.0) {
+          if (fwhmResponse == false)
+            histVal = sort_value * sort_scaling + sort_shift;
+          else {
+            histVal = FWHM_response(sort_value);
+            histVal = histVal * sort_scaling + sort_shift;
+          }
 
-      // drop bad hpge crystals and csi
-      /**************************************************************
-       for 84Kr: 10.2 (38), 11.0 (40), 11.2 (42), 12.2 (46), no csi
-       for 94Sr: 12.2 (46), drop corner CsI (11,15,19,23)
-      **************************************************************/
-      int hpge = (pos - 1) * 4 + col; // 0-3 pos1, 4-7 pos2, etc.
-
-      if (hpge != 38)
-        if (hpge != 40)
-          if (hpge != 42)
-            if (hpge != 46)
-            /* if(csi != 11) */
-            /* if(csi != 15) */
-            /* if(csi != 19) */
-            /* if(csi != 23) */
-            {
-              if (sort_value >= 0.0) {
-                if (fwhmResponse == false)
-                  histVal = sort_value * sort_scaling + sort_shift;
-                else {
-                  histVal = FWHM_response(sort_value);
-                  histVal = histVal * sort_scaling + sort_shift;
-                }
-
-                if (histVal >= 0.0)
-                  if (histVal < S32K)
-                    dOutHist[group][(int)(histVal)] +=
-                        (float)weight_value; // fill the output histogram
-
-                groupHist[0][group]++;
-              }
-            }
+          if(group<NSPECT)
+            if (histVal >= 0.0)
+              if (histVal < S32K)
+                outHist[group][(int)(histVal)] +=
+                    (int)weight_value; // fill the output histogram
+        }
+      }
     }
   }
 }
@@ -322,7 +296,7 @@ void addTreeDataToOutHist() {
 void readGroupMap() {
   FILE *inp;
   char line[132];
-  int pos, col, csi, group;
+  int pos, col, csi1, csi2, group;
 
   if ((inp = fopen(group_file, "r")) == NULL) {
     printf("\nI can't open file %s\n", group_file);
@@ -332,11 +306,12 @@ void readGroupMap() {
 
   if (fgets(line, 132, inp) != NULL) {
     if (fgets(line, 132, inp) != NULL)
-      while (fscanf(inp, "%d %d %d %d", &pos, &col, &csi, &group) != EOF)
-        if (csi >= 1 && csi <= 24)
-          if (pos >= 1 && pos <= 16)
-            if (col >= 0 && col <= 3)
-              group_map[pos][col][csi] = group;
+      while (fscanf(inp, "%d %d %d %d %d", &pos, &col, &csi1, &csi2, &group) != EOF)
+        if (csi1 >= 1 && csi1 <= 128)
+          if (csi2 >= 1 && csi2 <= 128)
+            if (pos >= 1 && pos <= 16)
+              if (col >= 0 && col <= 3)
+                group_map[pos][col][csi1][csi2] = group;
 
   } else {
     printf("Wrong structure of file %s\n", group_file);
