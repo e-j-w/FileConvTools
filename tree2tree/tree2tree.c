@@ -52,14 +52,31 @@ int main(int argc, char *argv[])
             }
           printf("Tree in %s read out.\n",inp_filename);
 
-          if((gateLeaf = gtree->GetLeaf(gate_path))==NULL)
-            if((gateBranch = gtree->GetBranch(gate_path))==NULL)
+          if((gateLeaf[0] = gtree->GetLeaf(gate_path[0]))==NULL)
+            if((gateBranch[0] = gtree->GetBranch(gate_path[0]))==NULL)
               {
-                printf("ERROR: Gate data path '%s' doesn't correspond to a branch or leaf in the tree!\n",gate_path);
+                printf("ERROR: Gate data path '%s' doesn't correspond to a branch or leaf in the tree!\n",gate_path[0]);
                 exit(-1);
               }
-          if(gateLeaf==NULL)
-            gateLeaf = (TLeaf*)gateBranch->GetListOfLeaves()->First(); //get the first leaf from the specified branch
+          if(gateLeaf[0]==NULL)
+            gateLeaf[0] = (TLeaf*)gateBranch[0]->GetListOfLeaves()->First(); //get the first leaf from the specified branch
+
+          if(use_custom_gates == 4)
+            {
+              for(int i=1;i<4;i++)
+                {
+                  if((gateLeaf[i] = gtree->GetLeaf(gate_path[i]))==NULL)
+                  if((gateBranch[i] = gtree->GetBranch(gate_path[i]))==NULL)
+                    {
+                      printf("ERROR: Gate data path '%s' doesn't correspond to a branch or leaf in the tree!\n",gate_path[i]);
+                      exit(-1);
+                    } 
+                if(gateLeaf[i]==NULL)
+                  gateLeaf[i] = (TLeaf*)gateBranch[i]->GetListOfLeaves()->First(); //get the first leaf from the specified branch
+                }
+              
+            }
+
           printf("Path to gate data set.\n");
           
           //set up the output file (must be done before setting up the output tree)
@@ -93,9 +110,9 @@ int main(int argc, char *argv[])
               if(use_gate_weights==true)//custom gates used with weights
                 {
                   if(use_custom_gates==1)//1D gate
-                    for(int j=0; j<gateLeaf->GetNdata(); j++) //deal with multiple fold events
+                    for(int j=0; j<gateLeaf[0]->GetNdata(); j++) //deal with multiple fold events
                       {
-                        gate_value[0] = gateLeaf->GetValue(j);
+                        gate_value[0] = gateLeaf[0]->GetValue(j);
                         for (int k=0;k<num_custom_gates;k++)
                           if(valueInRange(gate_value[0],custom_gates[k][0],custom_gates[k][1]))
                             if(randGen->Uniform()<gate_weight[k])
@@ -103,11 +120,11 @@ int main(int argc, char *argv[])
                       }
                   
                   if(use_custom_gates==2)//2D gate
-                    for(int j=0; j<gateLeaf->GetNdata(); j++) //deal with multiple fold events
-                      for(int k=j+1; k<gateLeaf->GetNdata(); k++)
+                    for(int j=0; j<gateLeaf[0]->GetNdata(); j++) //deal with multiple fold events
+                      for(int k=j+1; k<gateLeaf[0]->GetNdata(); k++)
                         {
-                          gate_value[0] = gateLeaf->GetValue(j);
-                          gate_value[1] = gateLeaf->GetValue(k);
+                          gate_value[0] = gateLeaf[0]->GetValue(j);
+                          gate_value[1] = gateLeaf[0]->GetValue(k);
                           for (int l=0;l<num_custom_gates;l++)
                             if((valueInRange(gate_value[0],custom_gates[l][0],custom_gates[l][1]))&&(valueInRange(gate_value[1],custom_gates[l][2],custom_gates[l][3])))
                               {
@@ -122,6 +139,38 @@ int main(int argc, char *argv[])
                                 break;
                               }
                         }
+                  
+                  if(use_custom_gates==4)//4D gate
+                    {
+                      /*printf("ndata: %i\n",gateLeaf[0]->GetNdata());
+                      printf("values: %f %f, %f %f\n",gateLeaf[0]->GetValue(0),gateLeaf[1]->GetValue(0),gateLeaf[2]->GetValue(1),gateLeaf[3]->GetValue(1));
+                      getc(stdin);*/
+                      if(gateLeaf[0]->GetNdata() >= 2) 
+                        {
+                          gate_value[0] = gateLeaf[0]->GetValue(0);
+                          gate_value[1] = gateLeaf[1]->GetValue(0);
+                          gate_value[2] = gateLeaf[2]->GetValue(1);
+                          gate_value[3] = gateLeaf[3]->GetValue(1);
+                          for (int n=0;n<num_custom_gates;n++)
+                            if((valueInRange(gate_value[0],custom_gates[n][0],custom_gates[n][1]))&&(valueInRange(gate_value[1],custom_gates[n][2],custom_gates[n][3]))&&(valueInRange(gate_value[2],custom_gates[n][4],custom_gates[n][5]))&&(valueInRange(gate_value[3],custom_gates[n][6],custom_gates[n][7])))
+                              {
+                                if(randGen->Uniform()<gate_weight[n])
+                                  dropFlag=false;
+                                break;
+                              }
+                            else if((valueInRange(gate_value[0],custom_gates[n][4],custom_gates[n][5]))&&(valueInRange(gate_value[1],custom_gates[n][6],custom_gates[n][7]))&&(valueInRange(gate_value[2],custom_gates[n][0],custom_gates[n][1]))&&(valueInRange(gate_value[3],custom_gates[n][2],custom_gates[n][3])))
+                              {
+                                if(randGen->Uniform()<gate_weight[n])
+                                  dropFlag=false;
+                                break;
+                              }
+                        }
+                      else
+                        {
+                          printf("Not enough entries for 4D gate!\n");
+                        }
+                      
+                    }
                     
                 }
               
@@ -155,14 +204,31 @@ int main(int argc, char *argv[])
         }
       printf("Tree in %s read out.\n",inp_filename);
 
-      if((gateLeaf = gtree->GetLeaf(gate_path))==NULL)
-        if((gateBranch = gtree->GetBranch(gate_path))==NULL)
+      if((gateLeaf[0] = gtree->GetLeaf(gate_path[0]))==NULL)
+        if((gateBranch[0] = gtree->GetBranch(gate_path[0]))==NULL)
           {
-            printf("ERROR: Gate data path '%s' doesn't correspond to a branch or leaf in the tree!\n",gate_path);
+            printf("ERROR: Gate data path '%s' doesn't correspond to a branch or leaf in the tree!\n",gate_path[0]);
             exit(-1);
           }
-      if(gateLeaf==NULL)
-        gateLeaf = (TLeaf*)gateBranch->GetListOfLeaves()->First(); //get the first leaf from the specified branch
+      if(gateLeaf[0]==NULL)
+        gateLeaf[0] = (TLeaf*)gateBranch[0]->GetListOfLeaves()->First(); //get the first leaf from the specified branch
+
+      if(use_custom_gates == 4)
+        {
+          for(int i=1;i<4;i++)
+            {
+              if((gateLeaf[i] = gtree->GetLeaf(gate_path[i]))==NULL)
+              if((gateBranch[i] = gtree->GetBranch(gate_path[i]))==NULL)
+                {
+                  printf("ERROR: Gate data path '%s' doesn't correspond to a branch or leaf in the tree!\n",gate_path[i]);
+                  exit(-1);
+                } 
+            if(gateLeaf[i]==NULL)
+              gateLeaf[i] = (TLeaf*)gateBranch[i]->GetListOfLeaves()->First(); //get the first leaf from the specified branch
+            }
+          
+        }
+
       printf("Path to gate data set.\n");
       
       //set up the output file (must be done before setting up the output tree)
@@ -192,9 +258,9 @@ int main(int argc, char *argv[])
           if(use_gate_weights==true)//custom gates used with weights
             {
               if(use_custom_gates==1)//1D gate
-                for(int j=0; j<gateLeaf->GetNdata(); j++) //deal with multiple fold events
+                for(int j=0; j<gateLeaf[0]->GetNdata(); j++) //deal with multiple fold events
                   {
-                    gate_value[0] = gateLeaf->GetValue(j);
+                    gate_value[0] = gateLeaf[0]->GetValue(j);
                     for (int k=0;k<num_custom_gates;k++)
                       if(valueInRange(gate_value[0],custom_gates[k][0],custom_gates[k][1]))
                         if(randGen->Uniform()<gate_weight[k])
@@ -202,11 +268,11 @@ int main(int argc, char *argv[])
                   }
               
               if(use_custom_gates==2)//2D gate
-                for(int j=0; j<gateLeaf->GetNdata(); j++) //deal with multiple fold events
-                  for(int k=j+1; k<gateLeaf->GetNdata(); k++)
+                for(int j=0; j<gateLeaf[0]->GetNdata(); j++) //deal with multiple fold events
+                  for(int k=j+1; k<gateLeaf[0]->GetNdata(); k++)
                     {
-                      gate_value[0] = gateLeaf->GetValue(j);
-                      gate_value[1] = gateLeaf->GetValue(k);
+                      gate_value[0] = gateLeaf[0]->GetValue(j);
+                      gate_value[1] = gateLeaf[0]->GetValue(k);
                       for (int l=0;l<num_custom_gates;l++)
                         if((valueInRange(gate_value[0],custom_gates[l][0],custom_gates[l][1]))&&(valueInRange(gate_value[1],custom_gates[l][2],custom_gates[l][3])))
                           {
@@ -221,6 +287,37 @@ int main(int argc, char *argv[])
                             break;
                           }
                     }
+              if(use_custom_gates==4)//4D gate
+                {
+                  /*printf("ndata: %i\n",gateLeaf[0]->GetNdata());
+                  printf("values: %f %f, %f %f\n",gateLeaf[0]->GetValue(0),gateLeaf[1]->GetValue(0),gateLeaf[2]->GetValue(1),gateLeaf[3]->GetValue(1));
+                  getc(stdin);*/
+                  if(gateLeaf[0]->GetNdata() >= 2) 
+                    {
+                      gate_value[0] = gateLeaf[0]->GetValue(0);
+                      gate_value[1] = gateLeaf[1]->GetValue(0);
+                      gate_value[2] = gateLeaf[2]->GetValue(1);
+                      gate_value[3] = gateLeaf[3]->GetValue(1);
+                      for (int n=0;n<num_custom_gates;n++)
+                        if((valueInRange(gate_value[0],custom_gates[n][0],custom_gates[n][1]))&&(valueInRange(gate_value[1],custom_gates[n][2],custom_gates[n][3]))&&(valueInRange(gate_value[2],custom_gates[n][4],custom_gates[n][5]))&&(valueInRange(gate_value[3],custom_gates[n][6],custom_gates[n][7])))
+                          {
+                            if(randGen->Uniform()<gate_weight[n])
+                              dropFlag=false;
+                            break;
+                          }
+                        else if((valueInRange(gate_value[0],custom_gates[n][4],custom_gates[n][5]))&&(valueInRange(gate_value[1],custom_gates[n][6],custom_gates[n][7]))&&(valueInRange(gate_value[2],custom_gates[n][0],custom_gates[n][1]))&&(valueInRange(gate_value[3],custom_gates[n][2],custom_gates[n][3])))
+                          {
+                            if(randGen->Uniform()<gate_weight[n])
+                              dropFlag=false;
+                            break;
+                          }
+                    }
+                  else
+                    {
+                      printf("Not enough entries for 4D gate!\n");
+                    }
+                  
+                }
                 
             }
           
