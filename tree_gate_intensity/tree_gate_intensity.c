@@ -192,7 +192,7 @@ void getIntensities()
                         numEv[n]++;
                         break;
                       }
-                    else if((valueInRange(gate_value[0],custom_gates[n][4],custom_gates[n][5]))&&(valueInRange(gate_value[1],custom_gates[n][6],custom_gates[n][7]))&&(valueInRange(gate_value[2],custom_gates[n][0],custom_gates[n][1]))&&(valueInRange(gate_value[2],custom_gates[n][6],custom_gates[n][3])))
+                    else if((valueInRange(gate_value[0],custom_gates[n][4],custom_gates[n][5]))&&(valueInRange(gate_value[1],custom_gates[n][6],custom_gates[n][7]))&&(valueInRange(gate_value[2],custom_gates[n][0],custom_gates[n][1]))&&(valueInRange(gate_value[3],custom_gates[n][2],custom_gates[n][3])))
                       {
                         numEv[n]++;
                         break;
