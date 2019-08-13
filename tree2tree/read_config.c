@@ -18,7 +18,13 @@ void readConfigFile(const char * fileName,const char *configType)
               if(strcmp(str1,"SORT_PATH")==0)
                 strcpy(sort_path,str2);
               if(strcmp(str1,"GATE_PATH")==0)
-                strcpy(gate_path,str2);
+                strcpy(gate_path[0],str2);
+              if(strcmp(str1,"GATE_PATH_2")==0)
+                strcpy(gate_path[1],str2);
+              if(strcmp(str1,"GATE_PATH_3")==0)
+                strcpy(gate_path[2],str2);
+              if(strcmp(str1,"GATE_PATH_4")==0)
+                strcpy(gate_path[3],str2);
               if(strcmp(str1,"INPUT_FILE")==0)
                 {
                   listMode=false;
@@ -98,6 +104,25 @@ void readConfigFile(const char * fileName,const char *configType)
                       if(num_custom_gates<NSPECT)
                         if(fgets(str2,256,customFile)!=NULL)
                           if(sscanf(str2,"%lf %lf %lf %lf %lf",&custom_gates[num_custom_gates][0],&custom_gates[num_custom_gates][1],&custom_gates[num_custom_gates][2],&custom_gates[num_custom_gates][3],&gate_weight[num_custom_gates])==5)
+                            num_custom_gates++;
+                    }
+                  fclose(customFile);
+                }
+              if(strcmp(str1,"CUSTOM_4D_GATE_WEIGHT_FILE")==0)
+                {
+                  if((customFile=fopen(str2,"r"))==NULL)
+                    {
+                      printf("ERROR: Cannot open the custom 4D gate file %s specified in the parameter file!\n",str2);
+                      exit(-1);
+                    }
+                  use_custom_gates=4;
+                  use_gate_weights=true;
+                  num_custom_gates=0;
+                  while(!(feof(customFile)))//go until the end of file is reached
+                    {
+                      if(num_custom_gates<NSPECT)
+                        if(fgets(str2,256,customFile)!=NULL)
+                          if(sscanf(str2,"%lf %lf %lf %lf %lf %lf %lf %lf %lf",&custom_gates[num_custom_gates][0],&custom_gates[num_custom_gates][1],&custom_gates[num_custom_gates][2],&custom_gates[num_custom_gates][3],&custom_gates[num_custom_gates][4],&custom_gates[num_custom_gates][5],&custom_gates[num_custom_gates][6],&custom_gates[num_custom_gates][7],&gate_weight[num_custom_gates])==9)
                             num_custom_gates++;
                     }
                   fclose(customFile);
@@ -195,7 +220,7 @@ void readConfigFile(const char * fileName,const char *configType)
       if(listMode==true)
         printf("Input list file: %s\n",inp_filename);
       printf("Sorting from leaf with path: %s in tree: %s\n",sort_path,sort_tree_name);
-      printf("Taking gate data from leaf with path: %s in tree: %s\n",gate_path,gate_tree_name);
+      printf("Taking gate data from leaf with path: %s in tree: %s\n",gate_path[0],gate_tree_name);
       if(fwhmResponse==true)
         {
           printf("Will apply FWHM response function to sorted data.\n");
@@ -299,7 +324,7 @@ void readConfigFile(const char * fileName,const char *configType)
         printf("Input tree file: %s\n",inp_filename);
       if(listMode==true)
         printf("Input list file: %s\n",inp_filename);
-      printf("Taking gate data from leaf with path: %s in tree: %s\n",gate_path,gate_tree_name);
+      printf("Taking gate data from leaf with path: %s in tree: %s\n",gate_path[0],gate_tree_name);
       if(use_custom_gates>0)
         {
           printf("Using custom %iD gates. %i gates total.\n",use_custom_gates,num_custom_gates);
@@ -307,21 +332,21 @@ void readConfigFile(const char * fileName,const char *configType)
             {
               printf("First gate corresponds to gate data entries with values ranging from %f to %f",custom_gates[0][0],custom_gates[0][1]);
               for(int i=1;i<use_custom_gates;i++)
-                printf(" AND %f to %f",custom_gates[0][0+2*i],custom_gates[0][0+2*i]);
+                printf(" AND %f to %f",custom_gates[0][0+2*i],custom_gates[0][1+2*i]);
               printf("\nLast gate corresponds to gate data entries with values ranging from %f to %f\n",custom_gates[num_custom_gates-1][0],custom_gates[num_custom_gates-1][1]);
               for(int i=1;i<use_custom_gates;i++)
-                printf(" AND %f to %f",custom_gates[num_custom_gates-1][0+2*i],custom_gates[num_custom_gates-1][0+2*i]);
+                printf(" AND %f to %f",custom_gates[num_custom_gates-1][0+2*i],custom_gates[num_custom_gates-1][1+2*i]);
               printf("\n");     
             }
           else
             {
               printf("First gate corresponds to gate data entries with values ranging from %f to %f",custom_gates[0][0],custom_gates[0][1]);
               for(int i=1;i<use_custom_gates;i++)
-                printf(" AND %f to %f",custom_gates[0][0+2*i],custom_gates[0][0+2*i]);
+                printf(" AND %f to %f",custom_gates[0][0+2*i],custom_gates[0][1+2*i]);
               printf(" with weight %f\n",gate_weight[0]);
               printf("Last gate corresponds to gate data entries with values ranging from %f to %f",custom_gates[num_custom_gates-1][0],custom_gates[num_custom_gates-1][1]);
               for(int i=1;i<use_custom_gates;i++)
-                printf(" AND %f to %f",custom_gates[num_custom_gates-1][0+2*i],custom_gates[num_custom_gates-1][0+2*i]);
+                printf(" AND %f to %f",custom_gates[num_custom_gates-1][0+2*i],custom_gates[num_custom_gates-1][1+2*i]);
               printf(" with weight %f\n",gate_weight[num_custom_gates-1]);
             }
         }

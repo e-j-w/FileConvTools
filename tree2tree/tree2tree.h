@@ -25,8 +25,8 @@ FILE *config,*customFile;
 char cfgstr[256],str1[256],str2[256];
 
 //tree2mca parameters
-char sort_path[256],gate_path[256],inp_filename[256],sort_tree_name[256],gate_tree_name[256],out_filename[256],file_handler[256];
-double custom_gates[NSPECT][4];
+char sort_path[256],gate_path[4][256],inp_filename[256],sort_tree_name[256],gate_tree_name[256],out_filename[256],file_handler[256];
+double custom_gates[NSPECT][8];
 double gate_weight[NSPECT];
 int num_custom_gates=0;
 double sort_scaling=1.0;//data scaling factor
@@ -51,7 +51,7 @@ bool use_max_x=false;
 
 TFile *f;
 TTree *gtree;
-TLeaf *sortLeaf, *gateLeaf;
-TBranch *sortBranch, *gateBranch;
+TLeaf *sortLeaf, *gateLeaf[4];
+TBranch *sortBranch, *gateBranch[4];
 //TApplication *theApp;
 TRandom3 *randGen;
