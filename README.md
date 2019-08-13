@@ -2,6 +2,8 @@
 
 Maintainer: Jonathan Williams, Aaron Chester
 
+*This branch is only tested with ROOT v5.x.  For newer versions, try the master branch.*
+
 
 ## Description
 
