@@ -1,0 +1,22 @@
+INPUT_FILE                  run1_20Mg.root
+SORT_TREE_NAME              tree
+SORT_PATH                   GEAddBack
+WEIGHT_PATH					GWAddBack
+GROUP_MAP_PATH              Doppler_shift_group_map.par
+POS_PATH                    GIdAddBack
+COL_PATH                    GSegAddBack
+CSI_PATH                    rHit/Id
+SORT_DATA_SCALING_FACTOR    2
+SORT_DATA_SHIFT             0
+SORT_DATA_FWHM_RESPONSE     yes
+FWHM_F                      0.8658
+FWHM_G                      2.3924
+FWHM_H                      3.1841
+OUTPUT_FILE                 sim.fmca
+
+This is a configuration file for the tree2mca code.
+Possible parameters can be inferred from the code in 
+read_config.c.  At some point I may write better 
+documentation for this.
+If you change the format of the file, prepare for unforseen
+consequences.

@@ -1,0 +1,18 @@
+INPUT_FILE                  run1_20Mgnostopper.root
+SORT_TREE_NAME              tree
+SORT_PATH                   projDec/df
+POS_PATH                    GIdAddBack
+COL_PATH                    GSegAddBack
+CSI_PATH                    rHit/Id
+DG1                         1.017
+DG2                         1.005
+DG3                         0.993
+DG4                         0.982
+DG5                         0.1
+
+This is a configuration file for the tree2mca code.
+Possible parameters can be inferred from the code in 
+read_config.c.  At some point I may write better 
+documentation for this.
+If you change the format of the file, prepare for unforseen
+consequences.

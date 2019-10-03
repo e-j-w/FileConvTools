@@ -4,14 +4,6 @@
 char str[256];
 
 int main(int argc, char *argv[]) {
-  // Creating an instance of TApplication
-  // This is evidently needed for auto-loading of ROOT libraries,
-  // otherwise the program may crash upon execution depending on how ROOT
-  // is set up.
-  // http://root.cern.ch/phpBB3/viewtopic.php?f=3&t=14064
-  int ac;
-  char *av[10];
-  theApp = new TApplication("App", &ac, av);
 
   FILE *list, *output, *output1;
   TFile *inp;
@@ -19,12 +11,12 @@ int main(int argc, char *argv[]) {
 
   if (argc != 2) {
     printf("\ntree2mca_group parameter_file\n");
-    printf("-----------------------\nSorts TIGRESS add-back spectra gated by "
+    printf("-----------------------------\nSorts TIGRESS add-back spectra gated by "
            "TIGRESS-CsI Doppler shift groups defined via a group map.\n\n");
     exit(-1);
   }
 
-  readConfigFile(argv[1], "tree2mca_group"); // grab data from the parameter
+  readConfigFile(argv[1]); // grab data from the parameter
                                              // file
 
   // initialize histograms
@@ -283,38 +275,22 @@ void addTreeDataToOutHist() {
        * %.3f\n",pos,col,sort_value,weight_value,csi,csiE); */
       /* getc(stdin); */
 
-      // drop bad hpge crystals and csi
-      /**************************************************************
-       for 84Kr: 10.2 (38), 11.0 (40), 11.2 (42), 12.2 (46), no csi
-       for 94Sr: 12.2 (46), drop corner CsI (11,15,19,23)
-      **************************************************************/
-      int hpge = (pos - 1) * 4 + col; // 0-3 pos1, 4-7 pos2, etc.
 
-      if (hpge != 38)
-        if (hpge != 40)
-          if (hpge != 42)
-            if (hpge != 46)
-            /* if(csi != 11) */
-            /* if(csi != 15) */
-            /* if(csi != 19) */
-            /* if(csi != 23) */
-            {
-              if (sort_value >= 0.0) {
-                if (fwhmResponse == false)
-                  histVal = sort_value * sort_scaling + sort_shift;
-                else {
-                  histVal = FWHM_response(sort_value);
-                  histVal = histVal * sort_scaling + sort_shift;
-                }
+      if (sort_value >= 0.0) {
+        if (fwhmResponse == false)
+          histVal = sort_value * sort_scaling + sort_shift;
+        else {
+          histVal = FWHM_response(sort_value);
+          histVal = histVal * sort_scaling + sort_shift;
+        }
 
-                if (histVal >= 0.0)
-                  if (histVal < S32K)
-                    dOutHist[group][(int)(histVal)] +=
-                        (float)weight_value; // fill the output histogram
+        if (histVal >= 0.0)
+          if (histVal < S32K)
+            dOutHist[group][(int)(histVal)] +=
+                (float)weight_value; // fill the output histogram
 
-                groupHist[0][group]++;
-              }
-            }
+        groupHist[0][group]++;
+      }
     }
   }
 }

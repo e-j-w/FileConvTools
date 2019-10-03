@@ -39,9 +39,6 @@ void readConfigFile(const char *fileName) {
           strcpy(out_filename, str2);
         }
         // group map stuff
-        if ((strcmp(str1, "GROUP_MAP_PATH") == 0) ||
-            (strcmp(str1, "RING_MAP_PATH") == 0))
-          strcpy(group_file, str2);
         if (strcmp(str1, "POS_PATH") == 0)
           strcpy(pos_path, str2);
         if (strcmp(str1, "COL_PATH") == 0)
