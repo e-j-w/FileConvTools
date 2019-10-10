@@ -269,11 +269,12 @@ void addTreeDataToOutHist() {
       pos = posLeaf->GetValue(j);
       col = colLeaf->GetValue(j);
       csi = csiLeaf->GetValue(0); // recoil in csi only once per event
+      //printf("pos %2d col %1d E %.3f w %.3f csi %2d\n",pos,col,sort_value,weight_value,csi);
+      //getc(stdin);
+
       group = group_map[pos][col][csi];
 
-      /* printf("pos %2d col %1d E %.3f w %.3f csi %2d E
-       * %.3f\n",pos,col,sort_value,weight_value,csi,csiE); */
-      /* getc(stdin); */
+      
 
 
       if (sort_value >= 0.0) {

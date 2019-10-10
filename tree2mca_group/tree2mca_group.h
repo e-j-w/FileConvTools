@@ -58,7 +58,7 @@ TApplication *theApp;
 TRandom3 *randGen;
 
 // group stuff
-int  group_map[17][5][25];
+int  group_map[17][5][129];
 TLeaf *posLeaf,*colLeaf,*csiLeaf,*csiELeaf;
 TBranch *posBranch,*colBranch,*csiBranch,*csiEBranch;
 // group hist

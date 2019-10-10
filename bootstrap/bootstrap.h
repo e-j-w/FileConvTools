@@ -80,7 +80,7 @@ TBranch *sortBranch, *weightBranch, *gateBranch;
 // for sorting into groups
 void readGroupMap();
 double FWHM_response(double);
-int  group_map[17][5][25];
+int  group_map[17][5][129];
 TLeaf *posLeaf,*colLeaf,*csiLeaf,*csiELeaf;
 TBranch *posBranch,*colBranch,*csiBranch;
 int groupHist[NSPECT][S32K];
