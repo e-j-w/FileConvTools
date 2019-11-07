@@ -4,14 +4,6 @@
 char str[256];
 
 int main(int argc, char *argv[]) {
-  // Creating an instance of TApplication
-  // This is evidently needed for auto-loading of ROOT libraries,
-  // otherwise the program may crash upon execution depending on how ROOT
-  // is set up.
-  // http://root.cern.ch/phpBB3/viewtopic.php?f=3&t=14064
-  int ac;
-  char *av[10];
-  theApp = new TApplication("App", &ac, av);
 
   FILE *list;
   TFile *inp;
@@ -31,7 +23,7 @@ int main(int argc, char *argv[]) {
   d1 = new TH1D("DopplerHist", "DopplerHist", 100, 0.940, 1.06);
 
   if (argc != 2) {
-    printf("\ntree2mca_group parameter_file\n");
+    printf("\ntree2doppler_2Dmap parameter_file\n");
     printf("-----------------------\nSorts TIGRESS add-back spectra gated by "
            "TIGRESS-CsI Doppler shift groups defined via a group map.\n\n");
     exit(-1);

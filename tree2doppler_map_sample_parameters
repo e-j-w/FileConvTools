@@ -10,7 +10,7 @@ DG3                         0.993
 DG4                         0.982
 DG5                         0.1
 
-This is a configuration file for the tree2mca code.
+This is a configuration file for the tree2doppler_map code.
 Possible parameters can be inferred from the code in 
 read_config.c.  At some point I may write better 
 documentation for this.
