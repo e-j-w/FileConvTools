@@ -26,9 +26,6 @@ char cfgstr[256],str1[256],str2[256];
 // tree2mca_group parameters
 char sort_path[256],weight_path[256],gate_path[256],inp_filename[256],sort_tree_name[256],gate_tree_name[256],out_filename[256],file_handler[256];
 char group_file[256],pos_path[256],col_path[256],csi_path[256]; // group sorting stuff
-double custom_gates[NSPECT][4];
-double gate_weight[NSPECT];
-int num_custom_gates=0;
 double sort_scaling=1.0;//data scaling factor
 double sort_shift=0.0;//data shift in bins
 double gate_scaling=1.0;//gate scaling factor
@@ -38,7 +35,6 @@ bool fwhmResponse=false; //whether to do energy convolution
 double fwhmF,fwhmG,fwhmH,fwhmTauH,fwhmTauL,wH,wL,wG; //energy convolution parameters
 bool output_specified=false;
 bool file_handler_specified=false;
-int use_custom_gates=0;//0=no gates,1=1D gates,2=2D gates, etc.
 bool use_gate_weights=false;
 bool use_weights=false;
 

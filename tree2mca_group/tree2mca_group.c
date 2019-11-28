@@ -11,13 +11,16 @@ int main(int argc, char *argv[]) {
 
   if (argc != 2) {
     printf("\ntree2mca_group parameter_file\n");
-    printf("-----------------------------\nSorts TIGRESS add-back spectra gated by "
-           "TIGRESS-CsI Doppler shift groups defined via a group map.\n\n");
+    printf("-----------------------------\nSorts TIGRESS add-back spectra "
+           "gated by "
+           "TIGRESS-CsI Doppler shift groups defined via a group map.\nIn this "
+           "code, the group map specifies combinations of one TIGRESS core and "
+           "one CsI position.\n\n");
     exit(-1);
   }
 
   readConfigFile(argv[1]); // grab data from the parameter
-                                             // file
+                           // file
 
   // initialize histograms
   for (int i = 0; i < NSPECT; i++)
@@ -269,13 +272,10 @@ void addTreeDataToOutHist() {
       pos = posLeaf->GetValue(j);
       col = colLeaf->GetValue(j);
       csi = csiLeaf->GetValue(0); // recoil in csi only once per event
-      //printf("pos %2d col %1d E %.3f w %.3f csi %2d\n",pos,col,sort_value,weight_value,csi);
-      //getc(stdin);
+      // printf("pos %2d col %1d E %.3f w %.3f csi
+      // %2d\n",pos,col,sort_value,weight_value,csi); getc(stdin);
 
       group = group_map[pos][col][csi];
-
-      
-
 
       if (sort_value >= 0.0) {
         if (fwhmResponse == false)

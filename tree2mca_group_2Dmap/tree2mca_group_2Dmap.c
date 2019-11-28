@@ -20,12 +20,13 @@ int main(int argc, char *argv[]) {
   if (argc != 2) {
     printf("\ntree2mca_group parameter_file\n");
     printf("-----------------------\nSorts TIGRESS add-back spectra gated by "
-           "TIGRESS-CsI Doppler shift groups defined via a group map.\n\n");
+           "TIGRESS-CsI Doppler shift groups defined via a group map.\nIn this "
+           "code, the group map specifies combinations of one TIGRESS core and "
+           "two CsI positions.\n\n");
     exit(-1);
   }
 
-  readConfigFile(argv[1], "tree2mca_group"); // grab data from the parameter
-                                             // file
+  readConfigFile(argv[1]); // grab data from the parameter file
 
   // initialize histograms
   for (int i = 0; i < NSPECT; i++)
@@ -73,12 +74,13 @@ int main(int argc, char *argv[]) {
                 ->First(); // get the first leaf from the specified branch
 
       // weight leaf
-      if(use_weights) {
+      if (use_weights) {
         if ((weightLeaf = stree->GetLeaf(weight_path)) == NULL)
           if ((weightBranch = stree->GetBranch(weight_path)) == NULL) {
-            printf("ERROR: Weight data path '%s' doesn't correspond to a branch "
-                  "or leaf in the tree!\n",
-                  weight_path);
+            printf(
+                "ERROR: Weight data path '%s' doesn't correspond to a branch "
+                "or leaf in the tree!\n",
+                weight_path);
             exit(-1);
           }
         if (weightLeaf == NULL)
@@ -185,9 +187,10 @@ int main(int argc, char *argv[]) {
     if (use_weights) {
       if ((weightLeaf = stree->GetLeaf(weight_path)) == NULL)
         if ((weightBranch = stree->GetBranch(weight_path)) == NULL) {
-          printf("ERROR: Weight data path '%s' doesn't correspond to a branch or "
-                "leaf in the tree!\n",
-                weight_path);
+          printf(
+              "ERROR: Weight data path '%s' doesn't correspond to a branch or "
+              "leaf in the tree!\n",
+              weight_path);
           exit(-1);
         }
       if (weightLeaf == NULL)
@@ -260,7 +263,7 @@ void addTreeDataToOutHist() {
   for (int i = 0; i < stree->GetEntries(); i++) {
     stree->GetEntry(i);
     for (int j = 0; j < sortLeaf->GetLen(); j++) {
-      sort_value = sortLeaf->GetValue(j);     // in keV
+      sort_value = sortLeaf->GetValue(j); // in keV
       if (use_weights)
         weight_value = weightLeaf->GetValue(j); // weight
       else
@@ -268,12 +271,12 @@ void addTreeDataToOutHist() {
       pos = posLeaf->GetValue(j);
       col = colLeaf->GetValue(j);
       csi1 = csiLeaf->GetValue(0);
-      if(csiLeaf->GetNdata()>1){
+      if (csiLeaf->GetNdata() > 1) {
         csi2 = csiLeaf->GetValue(1);
         group = group_map[pos][col][csi1][csi2];
 
-        //int hpge = (pos - 1) * 4 + col; // 0-3 pos1, 4-7 pos2, etc.
-        
+        // int hpge = (pos - 1) * 4 + col; // 0-3 pos1, 4-7 pos2, etc.
+
         if (sort_value >= 0.0) {
           if (fwhmResponse == false)
             histVal = sort_value * sort_scaling + sort_shift;
@@ -282,7 +285,7 @@ void addTreeDataToOutHist() {
             histVal = histVal * sort_scaling + sort_shift;
           }
 
-          if(group<NSPECT)
+          if (group < NSPECT)
             if (histVal >= 0.0)
               if (histVal < S32K)
                 outHist[group][(int)(histVal)] +=
@@ -306,7 +309,8 @@ void readGroupMap() {
 
   if (fgets(line, 132, inp) != NULL) {
     if (fgets(line, 132, inp) != NULL)
-      while (fscanf(inp, "%d %d %d %d %d", &pos, &col, &csi1, &csi2, &group) != EOF)
+      while (fscanf(inp, "%d %d %d %d %d", &pos, &col, &csi1, &csi2, &group) !=
+             EOF)
         if (csi1 >= 1 && csi1 <= 128)
           if (csi2 >= 1 && csi2 <= 128)
             if (pos >= 1 && pos <= 16)
