@@ -8,9 +8,10 @@
 
 //PARAMETERS
 
-char outName[256];
+char outName[256], weightOutName[256];
 
 float inpHist1[NSPECT][S32K],inpHist2[NSPECT][S32K];
 float outHist[NSPECT][S32K];
+float weightHist[NSPECT][S32K];
 int mcaHist[NSPECT][S32K];
 

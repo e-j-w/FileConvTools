@@ -45,13 +45,17 @@ int main(int argc, char *argv[])
 
   FILE *input1,*input2;
   FILE *output=NULL;
+  bool writeWeights = false;
 
-  if((argc!=6)&&(argc!=3))
+  if((argc!=7)&&(argc!=6)&&(argc!=3))
     {
-      printf("\nadd_mca input1 scale_factor_1 input_2 scale_factor_2 output\n");
-      printf("------------------------------\nAdds the two input .mca files together spectrum by spectrum and outputs a combined .fmca or .mca file given by output = scale_factor_1*input_1 + scale_factor_2*input_2.  Integer format will be saved if the output file extension is .mca.\n");
+      printf("\nadd_mca input1 scale_factor_1 input_2 scale_factor_2 output_sp output_weight_sp\n");
+      printf("------------------------------\n");
+      printf("Adds the two input .mca files together spectrum by spectrum and outputs a combined .fmca or .mca file given by output = scale_factor_1*input_1 + scale_factor_2*input_2.  Integer format will be saved if the output file extension is .mca.\n");
+      printf("output_weight_sp is an optional parameter.  If used, a weighting spectrum will be written which can be used in RadWare or similar programs to weight background subtracted data.\n");
       printf("\nadd_mca input_list output\n");
-      printf("-------------------------\nAdds the all of the .mca files apecified in the list file together spectrum by spectrum with the corresponding scale factors and outputs a combined .fmca or .mca file.\n");
+      printf("-------------------------\n");
+      printf("Adds the all of the .mca files apecified in the list file together spectrum by spectrum with the corresponding scale factors and outputs a combined .fmca or .mca file.\n");
       printf("The list file should contain the relative file paths to the individual .mca files seperated by line.  Integer format will be saved if the output file extension is .mca.\n\n");
       exit(-1);
     }
@@ -62,14 +66,20 @@ int main(int argc, char *argv[])
     for (int j=0;j<S32K;j++)
     	{
       	outHist[i][j]=0.;
+        weightHist[i][j]=0.;
       	mcaHist[i][j]=0;
       }
   
   
 
   //read in the .mca files
-  if(argc==6) //two spectrum mode
+  if((argc==6)||(argc==7)) //two spectrum mode
     {
+      
+
+      if(argc==7){
+        writeWeights = true;
+      }
     	
       float scale1 = atof(argv[2]);
       float scale2 = atof(argv[4]);
@@ -102,8 +112,12 @@ int main(int argc, char *argv[])
       
       //append values to the output histogram
       for (int i=0;i<NSPECT;i++)
-        for (int j=0;j<S32K;j++)
+        for (int j=0;j<S32K;j++){
           outHist[i][j]+=scale1*inpHist1[i][j];
+          if(writeWeights)
+            weightHist[i][j]+=scale1*scale1*fabs(inpHist1[i][j]);
+        }
+          
       
       // read in input2
       const char *dot2 = strrchr(argv[3], '.'); // get the file extension
@@ -121,8 +135,12 @@ int main(int argc, char *argv[])
 
       //append values to the output histogram
       for (int i=0;i<NSPECT;i++)
-        for (int j=0;j<S32K;j++)
+        for (int j=0;j<S32K;j++){
           outHist[i][j]+=scale2*inpHist2[i][j];
+          if(writeWeights)
+            weightHist[i][j]+=scale2*scale2*fabs(inpHist2[i][j]);
+        }
+          
       
       //open the output file   
       if((output=fopen(argv[5],"w"))==NULL)
@@ -131,7 +149,9 @@ int main(int argc, char *argv[])
           exit(-1);
         }
       
-      strcpy(outName,argv[5]);
+      strncpy(outName,argv[5],256);
+      if(writeWeights)
+        strncpy(weightOutName,argv[6],256);
     }
 
   if(argc==3) //spectrum list mode
@@ -183,7 +203,7 @@ int main(int argc, char *argv[])
           printf("ERROR: Cannot open the output .mca file!\n");
           exit(-1);
         }
-      strcpy(outName,argv[2]);
+      strncpy(outName,argv[2],256);
     }
 
   // replace bins with less than zero counts
@@ -226,6 +246,43 @@ int main(int argc, char *argv[])
 			fclose(output);
 			printf("Wrote %i spectra to file %s\n",NSPECT,outName);
   	}
+  
+
+  if(writeWeights){
+    //open the weight spectrum file   
+    if((output=fopen(weightOutName,"w"))==NULL)
+      {
+        printf("ERROR: Cannot open the weight spectrum file: %s!\n",weightOutName);
+        exit(-1);
+      }
+      
+    const char *dot = strrchr(weightOutName, '.'); // get output file extension
+    if(strcmp(dot + 1,"mca")==0)
+      {
+        printf("Writing weight data in integer (.mca) format.\n");
+        
+        //convert data to integer
+        for (int i=0;i<NSPECT;i++)
+          for (int j=0;j<S32K;j++)
+            mcaHist[i][j]=weightHist[i][j];
+        
+        //write the output histogram to disk
+        for (int i=0;i<NSPECT;i++)
+          fwrite(mcaHist[i],S32K*sizeof(int),1,output);
+        fclose(output);
+        printf("Wrote %i spectra to weight spectrum file %s\n",NSPECT,weightOutName);
+      }
+    else if(strcmp(dot + 1,"fmca")==0)
+      {
+        printf("Writing weight data in floating-point (.fmca) format.\n");
+        
+        //write the output histogram to disk
+        for (int i=0;i<NSPECT;i++)
+          fwrite(weightHist[i],S32K*sizeof(float),1,output);
+        fclose(output);
+        printf("Wrote %i spectra to weight spectrum file %s\n",NSPECT,weightOutName);
+      }
+  }
    
   
   return 0; //great success
