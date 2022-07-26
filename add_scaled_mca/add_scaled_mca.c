@@ -1,7 +1,5 @@
 #include "add_scaled_mca.h"
 
-
-
 int readMCA(FILE* inp,char* filename,float inpHist[NSPECT][S32K])
 {
 	int num_spect=0;
@@ -45,6 +43,7 @@ int main(int argc, char *argv[])
 
   FILE *input1,*input2;
   FILE *output=NULL;
+  FILE *sumOutput=NULL;
   bool writeWeights = false;
 
   if((argc!=7)&&(argc!=6)&&(argc!=3))
@@ -53,24 +52,24 @@ int main(int argc, char *argv[])
       printf("------------------------------\n");
       printf("Adds the two input .mca files together spectrum by spectrum and outputs a combined .fmca or .mca file given by output = scale_factor_1*input_1 + scale_factor_2*input_2.  Integer format will be saved if the output file extension is .mca.\n");
       printf("output_weight_sp is an optional parameter.  If used, a weighting spectrum will be written which can be used in RadWare or similar programs to weight background subtracted data.\n");
-      printf("\nadd_mca input_list output\n");
+      printf("\nadd_mca input_list output output_weight_sp\n");
       printf("-------------------------\n");
-      printf("Adds the all of the .mca files apecified in the list file together spectrum by spectrum with the corresponding scale factors and outputs a combined .fmca or .mca file.\n");
-      printf("The list file should contain the relative file paths to the individual .mca files seperated by line.  Integer format will be saved if the output file extension is .mca.\n\n");
+      printf("Adds the all of the .fmca or .mca files apecified in the list file together spectrum by spectrum with the corresponding scale factors and outputs a combined .fmca or .mca file.\n");
+      printf("The list file should contain the relative file paths to the individual .fmca or .mca files seperated by line.  Integer format will be saved if the output file extension is .mca.\n");
+      printf("output_weight_sp is an optional parameter.  If used, a weighting spectrum will be written which can be used in RadWare or similar programs to weight background subtracted data.\n\n");
       exit(-1);
     }
 
   
-  //initialize the output histogram
-  for (int i=0;i<NSPECT;i++)
-    for (int j=0;j<S32K;j++)
-    	{
-      	outHist[i][j]=0.;
-        weightHist[i][j]=0.;
-      	mcaHist[i][j]=0;
-      }
-  
-  
+  //initialize the output histograms
+  for (int j=0;j<S32K;j++){
+    for (int i=0;i<NSPECT;i++){
+      outHist[i][j]=0.;
+      weightHist[i][j]=0.;
+      mcaHist[i][j]=0;
+    }
+    weightSumHist[j]=0;
+  }
 
   //read in the .mca files
   if((argc==6)||(argc==7)) //two spectrum mode
@@ -114,8 +113,10 @@ int main(int argc, char *argv[])
       for (int i=0;i<NSPECT;i++)
         for (int j=0;j<S32K;j++){
           outHist[i][j]+=scale1*inpHist1[i][j];
-          if(writeWeights)
+          if(writeWeights){
             weightHist[i][j]+=scale1*scale1*fabs(inpHist1[i][j]);
+            weightSumHist[j]+=scale1*scale1*fabs(inpHist1[i][j]);
+          }
         }
           
       
@@ -137,8 +138,10 @@ int main(int argc, char *argv[])
       for (int i=0;i<NSPECT;i++)
         for (int j=0;j<S32K;j++){
           outHist[i][j]+=scale2*inpHist2[i][j];
-          if(writeWeights)
+          if(writeWeights){
             weightHist[i][j]+=scale2*scale2*fabs(inpHist2[i][j]);
+            weightSumHist[j]+=scale2*scale2*fabs(inpHist2[i][j]);
+          }
         }
           
       
@@ -150,12 +153,25 @@ int main(int argc, char *argv[])
         }
       
       strncpy(outName,argv[5],256);
-      if(writeWeights)
+      if(writeWeights){
         strncpy(weightOutName,argv[6],256);
+        /*for (int j=0;j<S32K;j++){
+          for (int i=0;i<NSPECT;i++){
+            weightHist[i][j]=sqrtf(weightHist[i][j]);
+          }
+          weightSumHist[j]=sqrtf(weightSumHist[j]);
+        }*/
+      }
+        
     }
 
-  if(argc==3) //spectrum list mode
+  if((argc==3)||(argc==4)) //spectrum list mode
     {
+
+      if(argc==4){
+        writeWeights = true;
+      }
+
       char str[256];
       float scale=0.;
       //open the list file
@@ -192,8 +208,14 @@ int main(int argc, char *argv[])
 
           //add the .mca file values to the output histogram    
           for (int i=0;i<NSPECT;i++)
-            for (int j=0;j<S32K;j++)
+            for (int j=0;j<S32K;j++){
               outHist[i][j]+=scale*inpHist2[i][j];
+              if(writeWeights){
+                weightHist[i][j]+=scale*scale*fabs(inpHist2[i][j]);
+                weightSumHist[j]+=scale*scale*fabs(inpHist2[i][j]);
+              }
+            }
+              
         }
       fclose(input1);
         
@@ -204,6 +226,16 @@ int main(int argc, char *argv[])
           exit(-1);
         }
       strncpy(outName,argv[2],256);
+      if(writeWeights){
+        strncpy(weightOutName,argv[3],256);
+        /*for (int j=0;j<S32K;j++){
+          for (int i=0;i<NSPECT;i++){
+            weightHist[i][j]=sqrtf(weightHist[i][j]);
+          }
+          weightSumHist[j]=sqrtf(weightSumHist[j]);
+        }*/
+          
+      }
     }
 
   // replace bins with less than zero counts
@@ -250,38 +282,57 @@ int main(int argc, char *argv[])
 
   if(writeWeights){
     //open the weight spectrum file   
-    if((output=fopen(weightOutName,"w"))==NULL)
-      {
-        printf("ERROR: Cannot open the weight spectrum file: %s!\n",weightOutName);
-        exit(-1);
-      }
+    if((output=fopen(weightOutName,"w"))==NULL){
+      printf("ERROR: Cannot open the weight spectrum file: %s!\n",weightOutName);
+      exit(-1);
+    }
+    
+    char weightSumName[256];
+    sprintf(weightSumName, "sum_%s",weightOutName);
+    if((sumOutput=fopen(weightSumName,"w"))==NULL){
+      printf("ERROR: Cannot open the weight sum spectrum file: %s!\n",weightOutName);
+      exit(-1);
+    }
       
     const char *dot = strrchr(weightOutName, '.'); // get output file extension
-    if(strcmp(dot + 1,"mca")==0)
-      {
-        printf("Writing weight data in integer (.mca) format.\n");
-        
-        //convert data to integer
-        for (int i=0;i<NSPECT;i++)
-          for (int j=0;j<S32K;j++)
-            mcaHist[i][j]=weightHist[i][j];
-        
-        //write the output histogram to disk
-        for (int i=0;i<NSPECT;i++)
-          fwrite(mcaHist[i],S32K*sizeof(int),1,output);
-        fclose(output);
-        printf("Wrote %i spectra to weight spectrum file %s\n",NSPECT,weightOutName);
+    if(strcmp(dot + 1,"mca")==0){
+      printf("Writing weight data in integer (.mca) format.\n");
+      
+      //convert data to integer
+      for (int i=0;i<NSPECT;i++){
+        for (int j=0;j<S32K;j++){
+          mcaHist[i][j]=weightHist[i][j];
+        }
       }
-    else if(strcmp(dot + 1,"fmca")==0)
-      {
-        printf("Writing weight data in floating-point (.fmca) format.\n");
-        
-        //write the output histogram to disk
-        for (int i=0;i<NSPECT;i++)
-          fwrite(weightHist[i],S32K*sizeof(float),1,output);
-        fclose(output);
-        printf("Wrote %i spectra to weight spectrum file %s\n",NSPECT,weightOutName);
+      //write the output histogram to disk
+      for (int i=0;i<NSPECT;i++)
+        fwrite(mcaHist[i],S32K*sizeof(int),1,output);
+      fclose(output);
+      printf("Wrote %i spectra to weight spectrum file %s\n",NSPECT,weightOutName);
+
+      //convert data to integer
+      for (int j=0;j<S32K;j++){
+        mcaHist[0][j]=weightSumHist[j];
       }
+      //write the output histogram to disk
+      fwrite(mcaHist[0],S32K*sizeof(int),1,sumOutput);
+      fclose(sumOutput);
+      printf("Wrote 1 spectrum to summed weight spectrum file %s\n",weightSumName);
+
+    }else if(strcmp(dot + 1,"fmca")==0){
+      printf("Writing weight data in floating-point (.fmca) format.\n");
+      
+      //write the output histogram to disk
+      for (int i=0;i<NSPECT;i++)
+        fwrite(weightHist[i],S32K*sizeof(float),1,output);
+      fclose(output);
+      printf("Wrote %i spectra to weight spectrum file %s\n",NSPECT,weightOutName);
+
+      fwrite(weightSumHist,S32K*sizeof(float),1,sumOutput);
+      fclose(sumOutput);
+      printf("Wrote 1 spectrum to summed weight spectrum file %s\n",weightSumName);
+
+    }
   }
    
   
