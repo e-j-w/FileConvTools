@@ -21,12 +21,11 @@ int main(int argc, char *argv[])
   FILE *list;
   TFile *inp;
 
-  if(argc!=2)
-    {
-      printf("\ntree_gate_intensity parameter_file\n");
-      printf("-----------------------------\nChecks the number of events in the specified gates in the specified ROOT tree.\n\n");
-      exit(-1);
-    }
+  if(argc!=2){
+    printf("\ntree_gate_intensity parameter_file\n");
+    printf("-----------------------------\nChecks the number of events in the specified gates in the specified ROOT tree.\n\n");
+    exit(-1);
+  }
 
   readConfigFile(argv[1],"tree2tree"); //grab data from the parameter file
   

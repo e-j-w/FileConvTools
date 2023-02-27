@@ -82,10 +82,13 @@ void readConfigFile(const char * fileName,const char *configType)
                   num_custom_gates=0;
                   while(!(feof(customFile)))//go until the end of file is reached
                     {
-                      if(num_custom_gates<NSPECT)
+                      if(num_custom_gates<NSPECT){
                         if(fgets(str2,256,customFile)!=NULL)
                           if(sscanf(str2,"%lf %lf %lf",&custom_gates[num_custom_gates][0],&custom_gates[num_custom_gates][1],&gate_weight[num_custom_gates])==3)
                             num_custom_gates++;
+                      }else{
+                        break;
+                      }
                     }
                   fclose(customFile);
                 }
@@ -99,13 +102,15 @@ void readConfigFile(const char * fileName,const char *configType)
                   use_custom_gates=2;
                   use_gate_weights=true;
                   num_custom_gates=0;
-                  while(!(feof(customFile)))//go until the end of file is reached
-                    {
-                      if(num_custom_gates<NSPECT)
-                        if(fgets(str2,256,customFile)!=NULL)
-                          if(sscanf(str2,"%lf %lf %lf %lf %lf",&custom_gates[num_custom_gates][0],&custom_gates[num_custom_gates][1],&custom_gates[num_custom_gates][2],&custom_gates[num_custom_gates][3],&gate_weight[num_custom_gates])==5)
-                            num_custom_gates++;
+                  while(!(feof(customFile))){
+                    if(num_custom_gates<NSPECT){
+                      if(fgets(str2,256,customFile)!=NULL)
+                        if(sscanf(str2,"%lf %lf %lf %lf %lf",&custom_gates[num_custom_gates][0],&custom_gates[num_custom_gates][1],&custom_gates[num_custom_gates][2],&custom_gates[num_custom_gates][3],&gate_weight[num_custom_gates])==5)
+                          num_custom_gates++;
+                    }else{
+                      break;
                     }
+                  }
                   fclose(customFile);
                 }
               if(strcmp(str1,"CUSTOM_4D_GATE_WEIGHT_FILE")==0)
@@ -120,10 +125,13 @@ void readConfigFile(const char * fileName,const char *configType)
                   num_custom_gates=0;
                   while(!(feof(customFile)))//go until the end of file is reached
                     {
-                      if(num_custom_gates<NSPECT)
+                      if(num_custom_gates<NSPECT){
                         if(fgets(str2,256,customFile)!=NULL)
                           if(sscanf(str2,"%lf %lf %lf %lf %lf %lf %lf %lf %lf",&custom_gates[num_custom_gates][0],&custom_gates[num_custom_gates][1],&custom_gates[num_custom_gates][2],&custom_gates[num_custom_gates][3],&custom_gates[num_custom_gates][4],&custom_gates[num_custom_gates][5],&custom_gates[num_custom_gates][6],&custom_gates[num_custom_gates][7],&gate_weight[num_custom_gates])==9)
                             num_custom_gates++;
+                      }else{
+                        break;
+                      }
                     }
                   fclose(customFile);
                 }
@@ -188,182 +196,49 @@ void readConfigFile(const char * fileName,const char *configType)
   fclose(config);
   
   //Report parameters based on the config file type used
-  if(strcmp(configType,"tree2mca")==0)
+  if(listMode==false)
+    printf("Input tree file: %s\n",inp_filename);
+  if(listMode==true)
+    printf("Input list file: %s\n",inp_filename);
+  printf("Taking gate data from leaf with path: %s in tree: %s\n",gate_path[0],gate_tree_name);
+  if(use_custom_gates>0)
     {
-      if(listMode==false)
-        printf("Input tree file: %s\n",inp_filename);
-      if(listMode==true)
-        printf("Input list file: %s\n",inp_filename);
-      printf("Sorting from leaf with path: %s in tree: %s\n",sort_path,sort_tree_name);
-      if(fwhmResponse==true)
+      //for(int j=1;j<use_custom_gates;j++)
+      //  printf("Taking gate data %i from leaf with path: %s in tree: %s\n",j,gate_path[j],gate_tree_name);
+      printf("Using custom %iD gates. %i gates total.\n",use_custom_gates,num_custom_gates);
+      if(use_gate_weights==false)
         {
-          printf("Will apply FWHM response function to sorted data.\n");
-          printf("FWHM response function paremeters: F=%f, G=%f, H=%f.\n",fwhmF,fwhmG,fwhmH);
-          if(fwhmTauH>0.0)
-            printf("A high energy exponential tail will be added, with tau=%0.3f channels and weight=%0.3f.\n",fwhmTauH,wH);
-          if(fwhmTauL>0.0)
-            printf("A low energy exponential tail will be added, with tau=%0.3f channels and weight=%0.3f.\n",fwhmTauL,wL);
-        }
-      if(sort_scaling!=1.0)
-        printf("Will scale sorted data by a factor of %f\n",sort_scaling);
-      if(sort_shift!=0.0)
-        printf("Will shift sorted data by %0.2f bins.\n",sort_shift);
-      if(output_specified==true)
-        printf("Will save output data to file: %s\n",out_filename);
-      if(output_specified==false)
-        printf("Will save output data to individual files (input filenames + '.mca').\n");
-    }
-  if(strcmp(configType,"tree2mca_gated")==0)
-    {
-      if(listMode==false)
-        printf("Input tree file: %s\n",inp_filename);
-      if(listMode==true)
-        printf("Input list file: %s\n",inp_filename);
-      printf("Sorting from leaf with path: %s in tree: %s\n",sort_path,sort_tree_name);
-      printf("Taking gate data from leaf with path: %s in tree: %s\n",gate_path[0],gate_tree_name);
-      if(fwhmResponse==true)
-        {
-          printf("Will apply FWHM response function to sorted data.\n");
-          printf("FWHM response function paremeters: F=%f, G=%f, H=%f.\n",fwhmF,fwhmG,fwhmH);
-          if(fwhmTauH>0.0)
-            printf("A high energy exponential tail will be added, with tau=%0.3f channels and weight=%0.3f.\n",fwhmTauH,wH);
-          if(fwhmTauL>0.0)
-            printf("A low energy exponential tail will be added, with tau=%0.3f channels and weight=%0.3f.\n",fwhmTauL,wL);
-        }
-      if(sort_scaling!=1.0)
-        printf("Will scale sorted data by a factor of %f\n",sort_scaling);
-      if(sort_shift!=0.0)
-        printf("Will shift sorted data by %0.2f bins.\n",sort_shift);
-      if(use_custom_gates>0)
-        {
-          printf("Using custom gates. %i gates total.\n",num_custom_gates);
-          if(use_gate_weights==false)
-            {
-              printf("First gate corresponds to gate data with values ranging from %f to %f\n",custom_gates[0][0],custom_gates[0][1]);
-              printf("Last gate corresponds to gate data with values ranging from %f to %f\n",custom_gates[num_custom_gates-1][0],custom_gates[num_custom_gates-1][1]);
-            }
-          else
-            {
-              printf("First gate corresponds to gate data with values ranging from %f to %f with weight %f\n",custom_gates[0][0],custom_gates[0][1],gate_weight[0]);
-              printf("Last gate corresponds to gate data with values ranging from %f to %f with weight %f\n",custom_gates[num_custom_gates-1][0],custom_gates[num_custom_gates-1][1],gate_weight[num_custom_gates-1]);
-            }
+          printf("First gate corresponds to gate data entries with values ranging from %f to %f",custom_gates[0][0],custom_gates[0][1]);
+          for(int i=1;i<use_custom_gates;i++)
+            printf(" AND %f to %f",custom_gates[0][0+2*i],custom_gates[0][1+2*i]);
+          printf("\nLast gate corresponds to gate data entries with values ranging from %f to %f\n",custom_gates[num_custom_gates-1][0],custom_gates[num_custom_gates-1][1]);
+          for(int i=1;i<use_custom_gates;i++)
+            printf(" AND %f to %f",custom_gates[num_custom_gates-1][0+2*i],custom_gates[num_custom_gates-1][1+2*i]);
+          printf("\n");     
         }
       else
         {
-          if(gate_scaling!=1.0)
-            printf("Will scale gate data by a factor of %f\n",gate_scaling);
-          if(gate_shift!=0.0)
-            printf("Will shift gate data by %0.2f bins.\n",gate_shift);
+          printf("First gate corresponds to gate data entries with values ranging from %f to %f",custom_gates[0][0],custom_gates[0][1]);
+          for(int i=1;i<use_custom_gates;i++)
+            printf(" AND %f to %f",custom_gates[0][0+2*i],custom_gates[0][1+2*i]);
+          printf(" with weight %f\n",gate_weight[0]);
+          printf("Last gate corresponds to gate data entries with values ranging from %f to %f",custom_gates[num_custom_gates-1][0],custom_gates[num_custom_gates-1][1]);
+          for(int i=1;i<use_custom_gates;i++)
+            printf(" AND %f to %f",custom_gates[num_custom_gates-1][0+2*i],custom_gates[num_custom_gates-1][1+2*i]);
+          printf(" with weight %f\n",gate_weight[num_custom_gates-1]);
         }
-      if(output_specified==true)
-        printf("Will save output data to file: %s\n",out_filename);
-      if(output_specified==false)
-        printf("Will save output data to individual files (input filenames + '.mca').\n");
     }
-  if(strcmp(configType,"txt2mca")==0)
+  else
     {
-      printf("Input text file: %s\n",inp_filename);
-      if(file_handler_specified==true)
-        printf("Assuming input file format: %s\n",file_handler);
-      else
-        printf("Assuming regular file formatting (two columns).\n");
-      if(sort_scaling!=1.0)
-        printf("Will scale bins (rebin) by a factor of %f\n",sort_scaling);
-      if(val_scaling!=1.0)
-        printf("Will scale bin values by a factor of %f\n",val_scaling);
-      printf("Will save output data to .mca file: %s\n",out_filename);
+      if(gate_scaling!=1.0)
+        printf("Will scale gate data by a factor of %f\n",gate_scaling);
+      if(gate_shift!=0.0)
+        printf("Will shift gate data by %0.2f bins.\n",gate_shift);
     }
-  if(strcmp(configType,"txt2binnedavgtxt")==0)
-    {
-      printf("Input text file: %s\n",inp_filename);
-      if(file_handler_specified==true)
-        printf("Assuming input file format: %s\n",file_handler);
-      printf("Will use bin size of %f.\n",binSize);
-      if(use_max_x)
-        printf("Ignoring all x values larger than: %f\n",max_x);
-      printf("Will save output data to plaintext file: %s\n",out_filename);
-    }
-  if(strcmp(configType,"tree2binnedavgtxt")==0)
-    {
-      printf("Input tree file: %s\n",inp_filename);
-      printf("Taking x data from branch with name: %s, leaf #%i.\n",x_branch,x_leaf);
-      printf("Taking y data from branch with name: %s, leaf #%i.\n",y_branch,y_leaf);
-      printf("Will use bin size of %f.\n",binSize);
-      if(use_max_x)
-        printf("Ignoring all x values larger than: %f\n",max_x);
-      printf("Will save output data to plaintext file: %s\n",out_filename);
-    }
-  if(strcmp(configType,"tree2mca")==0)
-    {
-      if(listMode==false)
-        printf("Input tree file: %s\n",inp_filename);
-      if(listMode==true)
-        printf("Input list file: %s\n",inp_filename);
-      printf("Sorting from leaf with path: %s in tree: %s\n",sort_path,sort_tree_name);
-      if(fwhmResponse==true)
-        {
-          printf("Will apply FWHM response function to sorted data.\n");
-          printf("FWHM response function paremeters: F=%f, G=%f, H=%f.\n",fwhmF,fwhmG,fwhmH);
-          if(fwhmTauH>0.0)
-            printf("A high energy exponential tail will be added, with tau=%0.3f channels and weight=%0.3f.\n",fwhmTauH,wH);
-          if(fwhmTauL>0.0)
-            printf("A low energy exponential tail will be added, with tau=%0.3f channels and weight=%0.3f.\n",fwhmTauL,wL);
-        }
-      if(sort_scaling!=1.0)
-        printf("Will scale sorted data by a factor of %f\n",sort_scaling);
-      if(sort_shift!=0.0)
-        printf("Will shift sorted data by %0.2f bins.\n",sort_shift);
-      if(output_specified==true)
-        printf("Will save output data to file: %s\n",out_filename);
-      if(output_specified==false)
-        printf("Will save output data to individual files (input filenames + '.mca').\n");
-    }
-  if(strcmp(configType,"tree2tree")==0)
-    {
-      if(listMode==false)
-        printf("Input tree file: %s\n",inp_filename);
-      if(listMode==true)
-        printf("Input list file: %s\n",inp_filename);
-      printf("Taking gate data from leaf with path: %s in tree: %s\n",gate_path[0],gate_tree_name);
-      if(use_custom_gates>0)
-        {
-          //for(int j=1;j<use_custom_gates;j++)
-          //  printf("Taking gate data %i from leaf with path: %s in tree: %s\n",j,gate_path[j],gate_tree_name);
-          printf("Using custom %iD gates. %i gates total.\n",use_custom_gates,num_custom_gates);
-          if(use_gate_weights==false)
-            {
-              printf("First gate corresponds to gate data entries with values ranging from %f to %f",custom_gates[0][0],custom_gates[0][1]);
-              for(int i=1;i<use_custom_gates;i++)
-                printf(" AND %f to %f",custom_gates[0][0+2*i],custom_gates[0][1+2*i]);
-              printf("\nLast gate corresponds to gate data entries with values ranging from %f to %f\n",custom_gates[num_custom_gates-1][0],custom_gates[num_custom_gates-1][1]);
-              for(int i=1;i<use_custom_gates;i++)
-                printf(" AND %f to %f",custom_gates[num_custom_gates-1][0+2*i],custom_gates[num_custom_gates-1][1+2*i]);
-              printf("\n");     
-            }
-          else
-            {
-              printf("First gate corresponds to gate data entries with values ranging from %f to %f",custom_gates[0][0],custom_gates[0][1]);
-              for(int i=1;i<use_custom_gates;i++)
-                printf(" AND %f to %f",custom_gates[0][0+2*i],custom_gates[0][1+2*i]);
-              printf(" with weight %f\n",gate_weight[0]);
-              printf("Last gate corresponds to gate data entries with values ranging from %f to %f",custom_gates[num_custom_gates-1][0],custom_gates[num_custom_gates-1][1]);
-              for(int i=1;i<use_custom_gates;i++)
-                printf(" AND %f to %f",custom_gates[num_custom_gates-1][0+2*i],custom_gates[num_custom_gates-1][1+2*i]);
-              printf(" with weight %f\n",gate_weight[num_custom_gates-1]);
-            }
-        }
-      else
-        {
-          if(gate_scaling!=1.0)
-            printf("Will scale gate data by a factor of %f\n",gate_scaling);
-          if(gate_shift!=0.0)
-            printf("Will shift gate data by %0.2f bins.\n",gate_shift);
-        }
-      if(output_specified==true)
-        printf("Will save output data to file: %s\n",out_filename);
-      if(output_specified==false)
-        printf("Will save output data to file (input filename + '_out.root').\n");
-    }
+  if(output_specified==true)
+    printf("Will save output data to file: %s\n",out_filename);
+  if(output_specified==false)
+    printf("Will save output data to file (input filename + '_out.root').\n");
   
   printf("Finished reading parameter file...\n");
   

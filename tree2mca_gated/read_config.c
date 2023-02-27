@@ -76,10 +76,13 @@ void readConfigFile(const char * fileName,const char *configType)
                   num_custom_gates=0;
                   while(!(feof(customFile)))//go until the end of file is reached
                     {
-                      if(num_custom_gates<NSPECT)
+                      if(num_custom_gates<NSPECT){
                         if(fgets(str2,256,customFile)!=NULL)
                           if(sscanf(str2,"%lf %lf %lf",&custom_gates[num_custom_gates][0],&custom_gates[num_custom_gates][1],&gate_weight[num_custom_gates])==3)
                             num_custom_gates++;
+                      }else{
+                        break;
+                      }
                     }
                   fclose(customFile);
                 }
@@ -95,10 +98,13 @@ void readConfigFile(const char * fileName,const char *configType)
                   num_custom_gates=0;
                   while(!(feof(customFile)))//go until the end of file is reached
                     {
-                      if(num_custom_gates<NSPECT)
+                      if(num_custom_gates<NSPECT){
                         if(fgets(str2,256,customFile)!=NULL)
                           if(sscanf(str2,"%lf %lf %lf %lf %lf",&custom_gates[num_custom_gates][0],&custom_gates[num_custom_gates][1],&custom_gates[num_custom_gates][2],&custom_gates[num_custom_gates][3],&gate_weight[num_custom_gates])==5)
                             num_custom_gates++;
+                      }else{
+                        break;
+                      }
                     }
                   fclose(customFile);
                 }
