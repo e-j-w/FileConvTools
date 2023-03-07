@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
       exit(-1);
     }
 
-  readConfigFile(argv[1],"tree2mca_gated"); //grab data from the parameter file
+  readConfigFile(argv[1]); //grab data from the parameter file
   
   //initialize the output histogram
   for (int i=0;i<NSPECT;i++)
@@ -160,20 +160,39 @@ int main(int argc, char *argv[])
   if(output_specified==true)
     {
       //write the output histogram to disk
-      if((output=fopen(out_filename,"w"))==NULL)
-        {
+      const char *dots = strrchr(out_filename, '.'); // get the file extension
+      if(strcmp(dots + 1, "mca") == 0){
+        if((output=fopen(out_filename,"w"))==NULL){
           printf("ERROR: Cannot open the output .mca file!\n");
           exit(-1);
         }
-      for (int i=0;i<NSPECT;i++)
-        fwrite(outHist[i],S32K*sizeof(int),1,output);
-      fclose(output);
+        for(int i=0;i<NSPECT;i++){
+          for(int j=0;j<S32K;j++){
+            mcaOutHist[i][j] = (int)outHist[i][j];
+          }
+        }
+        for (int i=0;i<NSPECT;i++)
+          fwrite(mcaOutHist[i],S32K*sizeof(int),1,output);
+        fclose(output);
+      }else if(strcmp(dots + 1, "fmca") == 0){
+        if((output=fopen(out_filename,"w"))==NULL){
+          printf("ERROR: Cannot open the output .fmca file!\n");
+          exit(-1);
+        }
+        for (int i=0;i<NSPECT;i++)
+          fwrite(outHist[i],S32K*sizeof(float),1,output);
+        fclose(output);
+      }else{
+        printf("ERROR: Improper type of output file: %s\n",out_filename);
+        printf("Integer array (.mca) and float array (.fmca) files are supported.\n");
+        exit(-1);
+      }
     }
   if((output_specified==false)&&(listMode==false))
     {
-      if((output=fopen(strcat(inp_filename,".mca"),"w"))==NULL)
+      if((output=fopen(strcat(inp_filename,".fmca"),"w"))==NULL)
         {
-          printf("ERROR: Cannot open the output .mca file %s!\n",strcat(inp_filename,".mca"));
+          printf("ERROR: Cannot open the output .fmca file %s!\n",strcat(inp_filename,".mca"));
           exit(-1);
         }
       for (int i=0;i<NSPECT;i++)

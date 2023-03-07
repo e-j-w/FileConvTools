@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
       exit(-1);
     }
     
-  readConfigFile(argv[1],"tree2mca"); //grab data from the parameter file
+  readConfigFile(argv[1]); //grab data from the parameter file
   
   
   for (int i=0;i<S32K;i++)
@@ -122,16 +122,49 @@ int main(int argc, char *argv[])
       addTreeDataToOutHist();
     }
 
-
-
-  //write the output histogram to disk
-  if((output=fopen(out_filename,"w"))==NULL)
+  //save results to a single .mca file if applicable
+  if(output_specified==true)
     {
-      printf("ERROR: Cannot open the output .mca file!\n");
-      exit(-1);
+      //write the output histogram to disk
+      const char *dots = strrchr(out_filename, '.'); // get the file extension
+      if(strcmp(dots + 1, "mca") == 0){
+        if((output=fopen(out_filename,"w"))==NULL){
+          printf("ERROR: Cannot open the output .mca file!\n");
+          exit(-1);
+        }
+        for(int i=0;i<NSPECT;i++){
+          for(int j=0;j<S32K;j++){
+            mcaOutHist[i][j] = (int)outHist[i][j];
+          }
+        }
+        for (int i=0;i<NSPECT;i++)
+          fwrite(mcaOutHist[i],S32K*sizeof(int),1,output);
+        fclose(output);
+      }else if(strcmp(dots + 1, "fmca") == 0){
+        if((output=fopen(out_filename,"w"))==NULL){
+          printf("ERROR: Cannot open the output .fmca file!\n");
+          exit(-1);
+        }
+        for (int i=0;i<NSPECT;i++)
+          fwrite(outHist[i],S32K*sizeof(float),1,output);
+        fclose(output);
+      }else{
+        printf("ERROR: Improper type of output file: %s\n",out_filename);
+        printf("Integer array (.mca) and float array (.fmca) files are supported.\n");
+        exit(-1);
+      }
     }
-  fwrite(outHist[0],S32K*sizeof(int),1,output);
-  fclose(output);
+  if((output_specified==false)&&(listMode==false))
+    {
+      if((output=fopen(strcat(inp_filename,".fmca"),"w"))==NULL)
+        {
+          printf("ERROR: Cannot open the output .fmca file %s!\n",strcat(inp_filename,".mca"));
+          exit(-1);
+        }
+      for (int i=0;i<NSPECT;i++)
+        fwrite(outHist[i],S32K*sizeof(int),1,output);
+      fclose(output);
+    }
 
   return 0; //great success
 }

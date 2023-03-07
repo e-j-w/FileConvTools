@@ -42,15 +42,8 @@ bool file_handler_specified=false;
 int use_custom_gates=0;//0=no gates,1=1D gates,2=2D gates, etc.
 bool use_gate_weights=false;
 
-//binnedavgtxt parameters
-char x_branch[256],y_branch[256];
-int x_leaf, y_leaf;
-double val_scaling=1.0;
-double binSize=1.0;
-double max_x;
-bool use_max_x=false;
-
-int outHist[NSPECT][S32K];
+float outHist[NSPECT][S32K];
+int mcaOutHist[NSPECT][S32K];
 
 TTree *stree,*gtree;
 TLeaf *sortLeaf, *gateLeaf;
