@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
   //http://root.cern.ch/phpBB3/viewtopic.php?f=3&t=14064
   int ac;
   char* av[10];
-  theApp=new TApplication("App", &ac, av);
+  //theApp=new TApplication("App", &ac, av);
 
   FILE *list, *output;
   TFile *inp;
@@ -258,7 +258,7 @@ void addTreeDataToOutHist()
           else if(use_gate_weights==false)//custom gates used without weights
             {
               for (int k=0;k<NSPECT;k++)
-                if(valueInRange(gate_value,custom_gates[k][0],custom_gates[k][1]))
+                if(valueInRange(gate_value*gate_scaling + gate_shift,custom_gates[k][0],custom_gates[k][1]))
                   {
                     if(fwhmResponse==false)
                       histVal=sort_value*sort_scaling + sort_shift;
@@ -275,7 +275,7 @@ void addTreeDataToOutHist()
           else//custom gates used with weights
             {
               for (int k=0;k<NSPECT;k++)
-                if(valueInRange(gate_value,custom_gates[k][0],custom_gates[k][1]))
+                if(valueInRange(gate_value*gate_scaling + gate_shift,custom_gates[k][0],custom_gates[k][1]))
                   if(randGen->Uniform()<gate_weight[k])
                     {
                       if(fwhmResponse==false)
