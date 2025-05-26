@@ -2,7 +2,7 @@
 
 int readMCA(FILE* inp,char* filename,float inpHist[NSPECT][S32K])
 {
-	int num_spect=0;
+	int num_spect=NSPECT; //handle case where input file has NSPECT spectra
   for (int i=0; i<NSPECT; i++)
     if(fread(mcaHist[i],S32K*sizeof(int),1,inp)!=1)
       {
@@ -23,16 +23,16 @@ int readMCA(FILE* inp,char* filename,float inpHist[NSPECT][S32K])
 /*******************************************************************************/
 int readFMCA(FILE* inp,char* filename,float inpHist[NSPECT][S32K])
 {
-	int num_spect=0;
-  for (int i=0; i<NSPECT; i++)
-    if(fread(inpHist[i],S32K*sizeof(float),1,inp)!=1)
-      {
-      	num_spect=i;
-				break; // dont read in more spectra than there are in the input file
-				/* printf("ERROR: Error reading file %s!\n",filename); */
-				/* printf("For i=%d fread(inpHist[i],S32K*sizeof(float),1,inp)=%lu\n",i,fread(inpHist[i],S32K*sizeof(float),1,inp)); */
-				/* exit(-1); */
-      }
+	int num_spect=NSPECT; //handle case where input file has NSPECT spectra
+  for(int i=0; i<NSPECT; i++){
+    if(fread(inpHist[i],S32K*sizeof(float),1,inp)!=1){
+      num_spect=i;
+      break; // dont read in more spectra than there are in the input file
+      /* printf("ERROR: Error reading file %s!\n",filename); */
+      /* printf("For i=%d fread(inpHist[i],S32K*sizeof(float),1,inp)=%lu\n",i,fread(inpHist[i],S32K*sizeof(float),1,inp)); */
+      /* exit(-1); */
+    }
+  }
 
   return num_spect;
 }
@@ -146,11 +146,11 @@ int main(int argc, char *argv[])
 				      exit(-1);
 				    }
 				  const char *dot2 = strrchr(str, '.'); // get the file extension
-				  if(strcmp(dot2 + 1,"mca")==0)
+				  if(strcmp(dot2 + 1,"mca")==0){
 						num_spect = readMCA(input2,str,inpHist2);
-				  else if(strcmp(dot2 + 1,"fmca")==0)
+				  }else if(strcmp(dot2 + 1,"fmca")==0){
 						num_spect = readFMCA(input2,str,inpHist2);
-				  else
+          }else
 						{
 							printf("ERROR: Improper type of input file: %s\n",argv[2]);
 							printf("Integer array (.mca) and float array (.fmca) files are supported.\n");
