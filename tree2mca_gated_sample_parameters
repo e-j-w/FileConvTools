@@ -46,7 +46,7 @@ no: Don't apply FWHM response function.
 FWHM_F, FWHM_G, FWHM_H - Parameters for the FWHM response function, defined as FWHM = sqrt(F*F + G*G*x + H*H*x*x), where x is the .mca channel number / 1000.
 FWHM_TAU_HIGH - Tau (in channels) of the high energy exponential tail in the response function.  Default: 0.
 FWHM_TAU_LOW - Tau (in channels) of the low energy exponential tail in the response function.  Default: 0.
-GAUS_WEIGHT, EXP_HIGH_WEIGHT, EXP_LOW_WEIGHT - weights of the Gaussian, high energy exponential, and low energy exponential components in the response function.  These should sum to 1, or unexpected behaviour will occur.  If not specified, only the Gaussian component is used.
+GAUS_WEIGHT, EXP_HIGH_WEIGHT, EXP_LOW_WEIGHT - probabilities of applying the Gaussian, high energy exponential, and low energy exponential components in the response function (between 0 and 1). If not specified, only the Gaussian component is used.
 
 OUTPUT_FILE - Name of the output .mca file.
 For tree2mca_gated, the OUTPUT_FILE parameter is optional - if used, all data will be sorted into a single .mca file with the filename specified.  Otherwise, individual .mca files for each root tree will be generated with matching filenames.

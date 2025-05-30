@@ -303,23 +303,22 @@ double FWHM_response(double ch_in)
   
   if((wL>0.0)||(wH>0.0))//gaussian with exponential tail(s)
     {
+      ch_out = ch_in;
+      if(roll<wH)//high energy exponential response
+        {
+          ch_out += randGen->Exp(fwhmTauH);
+        }
+      if(roll<wL)//low energy exponential response
+        {
+          ch_out -= randGen->Exp(fwhmTauL);
+        }
       if(roll<wG)//gaussian response
         {
-          ch=ch_in/1000.;
+          ch=ch_out/1000.;
           fwhm=sqrt(fwhmF*fwhmF + fwhmG*fwhmG*ch + fwhmH*fwhmH*ch*ch);
           sigma=fwhm/2.35482;
           if(sigma>0)
-            ch_out=randGen->Gaus(ch_in,sigma);
-          else
-            ch_out=ch_in;
-        }
-      else if(roll<(wG+wH))//high energy exponential response
-        {
-          ch_out = ch_in + randGen->Exp(fwhmTauH);
-        }
-      else//low energy exponential response
-        {
-          ch_out = ch_in - randGen->Exp(fwhmTauL);
+            ch_out=randGen->Gaus(ch_out,sigma);
         }
     }
   else//gaussian only
